@@ -1,0 +1,317 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=6.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="description" content="Medlink los mejores doctores en línea.">
+    <meta name="csrf-token" content="jQudXqkhYspAgiZWnJYPZD6hhY1GDDtu4tO2ViRV">
+    <title>El más completo directorio médico en línea | Hablemos de Endocrino Centro</title><meta name="description" content="Encuentra a tu médico especialista en nuestro directorio digital, agenda tu cita y prepárate para una teleconsulta sin salir de tu casa.">
+    <meta property="og:title" content="El más completo directorio médico en línea">
+    <meta property="og:description" content="Encuentra a tu médico especialista en nuestro directorio digital, agenda tu cita y prepárate para una teleconsulta sin salir de tu casa.">
+    <link type="image/x-icon" href="./img/favicon-2.svg" rel="icon">
+    <link rel="stylesheet" href="./css/app.css">
+    <link rel="stylesheet" type="text/css" href="./css/view-patients.css">
+    <link rel="stylesheet" href=./css/search_health_workers.css>
+    <link rel="stylesheet" type="text/css" href="./css/health_workers_cards.css">
+    <link rel="stylesheet" href="./css/navbar.css">
+    <link rel="stylesheet" href="./css/footer.css">
+</head>
+<body class="">
+    <nav class="navbar navbar-expand-lg navbar-light mt-4 container-navbar">
+        <div  class="container d-flex justify-content-between align-items-center">
+            <div class="d-flex">
+                <div>
+                    <a href="#">
+                        <img src="./img/logo.gif" width="50" height="50" style="height: 50px;" alt="Logo"/>
+                    </a> Alopecia Corp.
+                </div>
+            </div>
+
+            <!--<div class="d-flex align-items-center justify-content-end">
+                <div class="container-responsive">
+                <ul class="navbar-nav d-flex justify-content-around align-items-center" style="column-gap: 5px;">
+                    <li class="nav-item p-2">
+                        <a class="font-color" href="#">Item</a>
+                    </li>
+                </ul>
+                </div>
+            </div>-->
+        </div>
+    </nav>
+
+    <section class="pt-4 mb-4 m-auto medium-container">
+       <div id="health-workers-search" class="search-health-worker">
+            <div class="px-2 py-4 pb-4 search-health-worker__container">
+                <form id="health-workers-search-form" action="#" method="get" class="w-100 search-health-worker__form col">
+                    <div class="d-flex flex-column flex-md-row col-md-12">
+                        <div class="col-md-8">
+                            <h6 class="mb-3 ms-1" style="color: #405f8d;" >Buscar por profesional o especialidad</h6>
+                            <div class="d-flex flex-column flex-md-row gap-2 gap-md-0">
+                                <div class="mb-md-2 col-md-5 pe-md-2">
+                                    <select id="profesional" class="w-100 ps-2 " name="profesional">
+                                        <option value="">Profesional</option>
+                                    </select>
+                                </div>
+                                <div class="mb-md-2 col-md-4 pe-md-2 speacialty-select">
+                                    <select id="specialty" class="w-100 ps-2 " name="specialty">
+                                        <option value="">Especialidad</option>
+                                        <option value="alopecia" >
+                                            ALOPECIA
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-md-2 col-md-3 pe-md-2">
+                                    <select id="appointment_type" class="w-100 ps-2 " name="appointment_type">
+                                        <option value="">Tipo de cita</option>
+                                        <option value="virtual" >
+                                            Virtual
+                                        </option>
+                                        <option value="presencial" >
+                                            Presencial
+                                        </option>
+                                        <option value="domiciliaria" >
+                                            Domiciliaria
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mt-3 mt-md-0">
+                            <h6 class="mb-3 ms-1"  style="color: #405f8d;" >Filtrar por fecha</h6>
+                            <input type="date" name="date" class="form-control form-input ps-2" value="2025-09-13">
+                        </div>
+                    </div>
+                    <div class="d-flex flex-row-reverse col-md-12 mt-3 mt-md-0">
+                        <button type="submit">Buscar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <section id="public-profile-cards" class="m-auto medium-container">
+            <div id="doctorList" class="d-flex flex-column gap-3">
+                <div data-v-fddef610="">
+                    <div data-v-fddef610="" class="px-2 py-3 d-flex flex-column flex-xl-row row-xl health-workers_cards--card" style="border: 1px solid rgb(64, 95, 141);">
+                        <div data-v-fddef610="" class="col-md-3">
+                            <div data-v-fddef610="" class="row mt-4 col-md d-flex flex-row flex-md-column text-md-center px-0 mx-0">
+                                <div data-v-fddef610="" class="col-6 row-md d-flex flex-column text-center align-self-center"><img data-v-fddef610="" alt="#" data-lazy="#" class="img-fluid profile-doctor align-self-center" src="./img/01.jpg" style="object-fit: cover; height: 64px; width: 64px; border-radius: 50%; font-size: 11px; overflow: hidden;"> 
+                                    <small data-v-fddef610="" class="mt-2" style="font-weight: 500;"><a data-v-fddef610="" href="#" class="text-turquoise">Perfil</a></small>
+                                </div> 
+                                
+                                <div data-v-fddef610="" class="col row-md ps-0 position-relative">
+                                    <h6 data-v-fddef610="" class="doc-name" style="color: rgb(64, 95, 141); font-weight: 600;"></h6> 
+                                    <!--<p data-v-fddef610="" class="mb-0" style="font-weight: 400; font-size: 12px; color: rgb(51, 50, 50);">
+                                        CMP <span data-v-fddef610="">: 32915</span>
+                                    </p>--> 
+                                    <small data-v-fddef610="" class="doc-speciality fw-bold" style="color: rgb(51, 50, 50);"></small> 
+                                </div>
+                            </div>
+                        </div> 
+            
+                        <div data-v-fddef610="" class="col-md px-0">
+                            <div data-v-fddef610="" class="simple-tabs px-md-5 px-xl-0">
+                                <div data-v-fddef610="" class="simple-tabs-header">
+                                    <label data-v-fddef610="" class="simple-tabs-header-link"> Virtual
+                                    <input data-v-fddef610="" type="radio" class="d-none" value="1"></label>
+                                    <label data-v-fddef610="" class="simple-tabs-header-link current">
+                                    Presencial
+                                    <input data-v-fddef610="" type="radio" class="d-none" value="2"></label>
+                                </div> 
+                
+                                <div data-v-fddef610="" class="simple-tab-line">
+
+                                </div> 
+                                <div data-v-fddef610="" class="simple-tabs-content">
+                                    <div data-v-fddef610="" class="simple-tabs-content__container">
+                                        <div data-v-fddef610="" class="simple-tabs-content__item current">
+                                            <div data-v-fddef610="" class="row">
+                                                <div data-v-fddef610="" class="px-4 py-2 px-md-2 col-12 col-md-5">
+                                    
+                                    <div data-v-fddef610="" class="d-flex gap-3">
+                                        <span data-v-fddef610="">
+                                            <img data-v-fddef610="" src="./img/icon-gps.svg" alt="Ícono simbolo GPS" width="30px" height="23px" style="padding-top: 2px; vertical-align: sub;">
+                                        </span> 
+                                        <p data-v-fddef610="" class="text-black-strong" style="font-weight: 500;">
+                                          Av. José Pardo 513 Of. 701 - Miraflores
+                                        </p>
+                                    </div> 
+                        
+                                    <div data-v-fddef610="" class="d-flex gap-3">
+                                        <span data-v-fddef610="">
+                                            <img data-v-fddef610="" src="./img/payment.svg" alt="Ícono simbolo de dinero" width="30px" height="26px" style="padding: 0px 5px;">
+                                        </span> 
+                                        <p data-v-fddef610="" class="text-black-strong" style="font-weight: 500;">
+                                            S/. 150.00
+                                        </p>
+                                    </div>
+                                    
+                                    <div data-v-fddef610="" class="d-flex gap-3" style="visibility: hidden;">
+                                        <span data-v-fddef610="">
+                                            <img data-v-fddef610="" src="/img/icon-calendar.svg" alt="Ícono calendario" width="30px" height="23px" style="padding-top: 2px; vertical-align: bottom;">
+                                        </span> 
+                                        <div data-v-fddef610="" class="text-black-strong d-flex gap-4" style="font-weight: 500;">
+                                            <p data-v-fddef610="">Disponible: 2025-09-15</p>
+                                        </div>
+                                    </div>
+                                </div> 
+                                
+                                <div data-v-fddef610="" class="px-0 py-2 px-md-2 col-12 col-md-7 m-auto health-workers_cards--card__availability">
+                                    <div data-v-6cad2bde="" data-v-fddef610="" class="availability-picker">
+                                        <header data-v-6cad2bde="">
+                                            <div data-v-6cad2bde="" class="arrowed">
+                                                <div data-v-6cad2bde="" class="arrow-left"></div>
+                                            </div> 
+                                            <label data-v-6cad2bde="" class="available-dates">
+                                                <h3 data-v-6cad2bde="">Hoy</h3> 
+                                                <h4 data-v-6cad2bde="">13 Septiembre</h4> 
+                                                <input data-v-6cad2bde="" type="radio" name="availability-date" value="2025-09-13">
+                                            </label>
+                                            <label data-v-6cad2bde="" class="available-dates">
+                                                <h3 data-v-6cad2bde="">Mañana</h3> 
+                                                <h4 data-v-6cad2bde="">14 Septiembre</h4> 
+                                                <input data-v-6cad2bde="" type="radio" name="availability-date" value="2025-09-14">
+                                            </label>
+                                            <label data-v-6cad2bde="" class="available-dates selected-date">
+                                                <h3 data-v-6cad2bde="">Lunes</h3> 
+                                                <h4 data-v-6cad2bde="">15 Septiembre</h4> 
+                                                <input data-v-6cad2bde="" type="radio" name="availability-date" value="2025-09-15">
+                                            </label> 
+                                            
+                                            <div data-v-6cad2bde="" class="arrowed">
+                                                <div data-v-6cad2bde="" class="arrow-right">
+
+                                                </div>
+                                            </div>
+                                        </header> 
+                                            
+                                        <article data-v-6cad2bde="">
+                                            <div data-v-6cad2bde="" class="available-slots-loading" style="display: none;">
+                                                <div data-v-6cad2bde="" role="status" class="spinner-border" style="color: rgb(73, 108, 175);">
+                                                    <span data-v-6cad2bde="" class="sr-only"></span>
+                                                </div>
+                                            </div> 
+                                            <div data-v-6cad2bde="" class="available-slots-wrapper">
+                                                <label data-v-6cad2bde="" class="available-slots">
+                                                    <span data-v-6cad2bde="">09:30</span> 
+                                                    <input data-v-6cad2bde="" type="radio" name="availability-slot" value="9.5">
+                                                </label>
+                                                <label data-v-6cad2bde="" class="available-slots">
+                                                    <span data-v-6cad2bde="">10:00</span> 
+                                                    <input data-v-6cad2bde="" type="radio" name="availability-slot" value="10">
+                                                </label>
+                                                <label data-v-6cad2bde="" class="available-slots">
+                                                    <span data-v-6cad2bde="">10:30</span> 
+                                                    <input data-v-6cad2bde="" type="radio" name="availability-slot" value="10.5">
+                                                </label>
+                                                <label data-v-6cad2bde="" class="available-slots">
+                                                    <span data-v-6cad2bde="">12:00</span> 
+                                                    <input data-v-6cad2bde="" type="radio" name="availability-slot" value="12">
+                                                </label>
+                                                <label data-v-6cad2bde="" class="available-slots">
+                                                    <span data-v-6cad2bde="">12:30</span> 
+                                                    <input data-v-6cad2bde="" type="radio" name="availability-slot" value="12.5">
+                                                </label>
+                                                <label data-v-6cad2bde="" class="available-slots">
+                                                    <span data-v-6cad2bde="">15:00</span> 
+                                                    <input data-v-6cad2bde="" type="radio" name="availability-slot" value="15">
+                                                </label>
+                                                <label data-v-6cad2bde="" class="available-slots">
+                                                    <span data-v-6cad2bde="">15:30</span> 
+                                                    <input data-v-6cad2bde="" type="radio" name="availability-slot" value="15.5">
+                                                </label>
+                                                <label data-v-6cad2bde="" class="available-slots">
+                                                    <span data-v-6cad2bde="">16:30</span> 
+                                                    <input data-v-6cad2bde="" type="radio" name="availability-slot" value="16.5">
+                                                </label>
+                                            </div>
+                                        </article> 
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4 mb-4 text-center d-flex justify-content-center"></>
+        </section>
+    </section>
+
+    <footer style="background-color: rgba(73, 108, 175, .05)">
+        <div class="container d-flex container-footer text-center flex-column flex-sm-row justify-content-between">
+            <div class="footer__items flex-column">
+                <div class="footer__items--item">
+                    <img
+                        width="85"
+                        src="./img/alopecia.jpg"
+                        alt="Logo"
+                        style="width: 85px;"
+                    >
+                </div>
+            </div>
+            
+            <div class="footer__items flex-column">
+                <div class="d-flex flex-column footer__items--item text-center text-sm-start">
+                    <span style="font-size: 1rem">Contacto</span>
+                    <span class="container-footer__mailcontact"><a href="mailto:alopecia@gmail.com" target="_blank">alopecia@gmail.com</a></span>
+                    <div class="container-footer__wspcontact d-flex">
+                        <div>
+                            <img width="36" height="36" src="./img/icon-whatsapp.svg" alt="Ícono Whatsapp" style="margin-right:7px;margin-top:1px;">
+                        </div>
+                        <div class="d-flex flex-column">
+                            <span class="container-footer__wspcontact--text">Escríbenos</span>
+                            <span class="container-footer__wspcontact--number"><a href="https://api.whatsapp.com/send?phone=" target="_blank"> 980608559</a></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex flex-column footer__items footer__items--item text-center text-sm-start">
+                <span style="font-size: 1rem">Síguenos</span>
+                <div class="footer__items--networks d-flex flex-column">
+                            <a
+                                id="btn-instagram"
+                                href="https://www.instagram.com/"
+                                target="_blank"
+                                rel="noreferrer"
+                            >
+                                <img width="16" height="16" src="./img/icon-instagram.svg" alt="Ícono Instagram" style="width: 16px; margin-bottom: 4px;">
+                                Instagram
+                            </a>
+
+                            <a
+                                id="btn-facebook"
+                                href="https://www.facebook.com/"
+                                target="_blank"
+                                rel="noreferrer"
+                            >
+                                <img width="16" height="16" src="./img/icon-facebook.svg"  alt="Ícono Facebook" style="width: 16px; margin-bottom: 7px;">
+                                Facebook
+                            </a>
+                </div>
+            </div>
+
+            <div class="footer__items">
+                <div class="d-flex flex-column footer__items__resources footer__items--item">
+                    <span style="font-size: 1rem">Recursos</span>
+                    <a href="#" rel="nofollow" style="margin: 2px">Libro de Reclamaciones</a>
+                    <a target="_blank" href="#" style="margin: 2px" rel="noreferrer">Política de Privacidad</a>
+                    <a href="#" rel="nofollow" style="margin: 2px">Preguntas Frecuentes</a>
+                </div>
+            </div>
+        </div>
+        <div class="text-center text-sm-start ms-sm-3 pb-2">
+            <span class="footer__copyright">© 2020 © Copyright Medlink. Todos los derechos reservados.</span>
+        </div>
+    </footer>
+
+    <script type="text/javascript" src="./js/manifest.js"></script>
+    <script type="text/javascript" src="./js/vendor.js"></script>
+    <script type="text/javascript" src="./js/app.js"></script>
+    <script src="./js/public-profile-cards.js"></script>
+</body>
+</html>
