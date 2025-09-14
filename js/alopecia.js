@@ -89,4 +89,65 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
+    const header = document.querySelector('header[data-v-6cad2bde]');
+    const left  = header.querySelector('.arrow-left');
+    const right = header.querySelector('.arrow-right');
+    const cards = [...header.querySelectorAll('.available-dates')];
+
+    const base = new Date(); base.setHours(0,0,0,0);
+    let offset = 0; 
+    const fmtFecha = new Intl.DateTimeFormat('es-PE', { day:'numeric', month:'long' });
+    const fmtDia   = new Intl.DateTimeFormat('es-PE', { weekday:'long' });
+
+    const iso = d => {
+        const y = d.getFullYear();
+        const m = String(d.getMonth()+1).padStart(2,'0');
+        const dd = String(d.getDate()).padStart(2,'0');
+        return `${y}-${m}-${dd}`;
+    };
+
+    const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+
+    function render() {
+        cards.forEach((card, i) => {
+        const d = new Date(base);
+        d.setDate(base.getDate() + offset + i);
+
+        const h3 = card.querySelector('h3');
+        const h4 = card.querySelector('h4');
+        const input = card.querySelector('input[type="radio"]');
+
+        const rel = offset + i;
+        h3.textContent = rel === 0 ? 'Hoy' : (rel === 1 ? 'Mañana' : cap(fmtDia.format(d)));
+        h4.textContent = cap(fmtFecha.format(d));
+        input.value = iso(d);
+        });
+
+        cards.forEach(c => c.classList.remove('selected-date'));
+        cards[0].classList.add('selected-date');
+        cards.forEach(c => c.querySelector('input').checked = false);
+        cards[0].querySelector('input').checked = true;
+    }
+
+    left.addEventListener('click', () => {
+        offset = Math.max(0, offset - 3); 
+        render();
+    });
+
+    right.addEventListener('click', () => {
+        offset += 3;
+        render();
+    });
+
+    header.addEventListener('click', (e) => {
+        const card = e.target.closest('.available-dates');
+        if (!card) return;
+        cards.forEach(c => c.classList.remove('selected-date'));
+        card.classList.add('selected-date');
+        cards.forEach(c => c.querySelector('input').checked = false);
+        card.querySelector('input').checked = true;
+    });
+
+    render();
+
 });
