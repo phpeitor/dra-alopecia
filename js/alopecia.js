@@ -59,12 +59,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (imagenesProfesionales[selectedText]) {
                 profileImg.src = imagenesProfesionales[selectedText];
             } else {
-                profileImg.src = "./img/01.jpg"; 
+                profileImg.src = "./img/woman.jpg"; 
             }
         } else {
             docName.textContent = '';
             docSpeciality.textContent = '';
-            profileImg.src = "./img/01.jpg";
+            profileImg.src = "./img/woman.jpg";
         }
     });
 
