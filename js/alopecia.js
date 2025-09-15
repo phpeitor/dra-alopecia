@@ -120,6 +120,26 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
 
+    // ====== SLOTS DOM REFS (MOVER ARRIBA ANTES DE USAR) ======
+    const pickerRoot   = document.querySelector('.availability-picker');
+    const slotsWrapper = pickerRoot.querySelector('.available-slots-wrapper');
+    const slotsLoading = pickerRoot.querySelector('.available-slots-loading');
+    const slotsMsgBox  = pickerRoot.querySelector('.available-slots-message');
+    const slotsMsgSpan = slotsMsgBox?.querySelector('.span-link');
+
+    const HHMM = d => `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+
+    function getSelectedDateStr() {
+        const checked = header.querySelector('input[name="availability-date"]:checked');
+        return checked ? checked.value : null;
+    }
+
+    function getSelectedProfesional() {
+        const opt = selectProfesional?.options[selectProfesional.selectedIndex];
+        if (!opt || !opt.value) return null;
+        return opt.text;
+    }
+
     function render() {
         cards.forEach((card, i) => {
           const d = new Date(base);
@@ -144,50 +164,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         renderSlots();
     }
 
-    left.addEventListener('click', () => {
-        offset = Math.max(0, offset - 3); 
-        render();
-    });
-
-    right.addEventListener('click', () => {
-        offset += 3;
-        render();
-    });
-
-    header.addEventListener('click', (e) => {
-        const card = e.target.closest('.available-dates');
-        if (!card) return;
-        cards.forEach(c => c.classList.remove('selected-date'));
-        card.classList.add('selected-date');
-        cards.forEach(c => c.querySelector('input').checked = false);
-        card.querySelector('input').checked = true;
-
-        // NUEVO: al seleccionar un día, recalcula slots
-        renderSlots();
-    });
-
-    render();
-
-    // ====== SLOTS (45 min) ======
-    const pickerRoot   = document.querySelector('.availability-picker');
-    const slotsWrapper = pickerRoot.querySelector('.available-slots-wrapper');
-    const slotsLoading = pickerRoot.querySelector('.available-slots-loading');
-    const slotsMsgBox  = pickerRoot.querySelector('.available-slots-message');
-    const slotsMsgSpan = slotsMsgBox?.querySelector('.span-link');
-
-    const HHMM = d => `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-
-    function getSelectedDateStr() {
-      const checked = header.querySelector('input[name="availability-date"]:checked');
-      return checked ? checked.value : null; // YYYY-MM-DD
-    }
-    function getSelectedProfesional() {
-      const opt = selectProfesional?.options[selectProfesional.selectedIndex];
-      if (!opt || !opt.value) return null;
-      return opt.text;
-    }
-
+    // ====== RENDER SLOTS (por el end y con data-v-6cad2bde) ======
     async function renderSlots() {
+        if (!slotsWrapper) return; // guard por si el DOM cambia
+
         // limpiar
         slotsWrapper.innerHTML = '';
         slotsMsgBox.style.display = 'none';
@@ -197,68 +177,61 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (!prof || !dateStr) {
             if (!prof) {
-            slotsMsgBox.style.display = 'block';
-            if (slotsMsgSpan) slotsMsgSpan.textContent = 'Selecciona un profesional para ver horarios.';
+                slotsMsgBox.style.display = 'block';
+                if (slotsMsgSpan) slotsMsgSpan.textContent = 'Selecciona un profesional para ver horarios.';
             }
             return;
         }
 
-        // Mostrar spinner
         slotsLoading.style.display = 'block';
         try {
             const data = programacionData || (await (await fetch('./js/programacion.json', { cache: 'no-store' })).json());
+            if (!programacionData) programacionData = data;
 
-            // Filtra bloques del profesional y del día exacto
             const events = (data.events || []).filter(e =>
-            e && e.profesional === prof &&
-            typeof e.start === 'string' && typeof e.end === 'string' &&
-            e.start.slice(0,10) === dateStr
+                e && e.profesional === prof &&
+                typeof e.start === 'string' && typeof e.end === 'string' &&
+                e.start.slice(0,10) === dateStr
             );
 
-            const STEP_MIN = 45;
-            const MILLI = 60000;
+            const STEP_MIN = 45, MILLI = 60000;
             const slotsSet = new Set();
 
-            // Helper HH:MM
-            const HHMM = d => `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-
             for (const ev of events) {
-            const start = new Date(ev.start);
-            const end   = new Date(ev.end);
-
-            // Construcción por el END:
-            // incluir end y luego retroceder de 45 en 45 hasta que el siguiente sea <= start
-            for (let tEnd = new Date(end); tEnd > start; tEnd = new Date(tEnd.getTime() - STEP_MIN * MILLI)) {
+                const start = new Date(ev.start);
+                const end   = new Date(ev.end);
+                // construir por el END (incluye end)
+                for (let tEnd = new Date(end); tEnd > start; tEnd = new Date(tEnd.getTime() - STEP_MIN * MILLI)) {
                 slotsSet.add(HHMM(tEnd));
-            }
+                }
             }
 
-            const slots = [...slotsSet].sort((a, b) => a.localeCompare(b)); // ascendente
+            const slots = [...slotsSet].sort();
             if (!slots.length) {
-            slotsMsgBox.style.display = 'block';
-            if (slotsMsgSpan) slotsMsgSpan.textContent = 'No hay horarios disponibles para este día.';
-            return;
+                slotsMsgBox.style.display = 'block';
+                if (slotsMsgSpan) slotsMsgSpan.textContent = 'No hay horarios disponibles para este día.';
+                return;
             }
 
             const frag = document.createDocumentFragment();
             slots.forEach(hhmm => {
-            const label = document.createElement('label');
-            label.className = 'available-slots';
-            label.setAttribute('data-v-6cad2bde', '');
+                const label = document.createElement('label');
+                label.className = 'available-slots';
+                label.setAttribute('data-v-6cad2bde', '');
 
-            const span = document.createElement('span');
-            span.setAttribute('data-v-6cad2bde', '');
-            span.textContent = hhmm;
+                const span = document.createElement('span');
+                span.setAttribute('data-v-6cad2bde', '');
+                span.textContent = hhmm;
 
-            const input = document.createElement('input');
-            input.setAttribute('data-v-6cad2bde', '');
-            input.type = 'radio';
-            input.name = 'availability-slot';
-            input.value = hhmm;
+                const input = document.createElement('input');
+                input.setAttribute('data-v-6cad2bde', '');
+                input.type = 'radio';
+                input.name = 'availability-slot';
+                input.value = hhmm;
 
-            label.appendChild(span);
-            label.appendChild(input);
-            frag.appendChild(label);
+                label.appendChild(span);
+                label.appendChild(input);
+                frag.appendChild(label);
             });
             slotsWrapper.appendChild(frag);
 
@@ -271,7 +244,118 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Primera pintada de slots (por si ya hay profesional seleccionado)
-    renderSlots();
+    // Eventos de navegación y selección de día
+    left.addEventListener('click', () => { offset = Math.max(0, offset - 3); render(); });
+    right.addEventListener('click', () => { offset += 3; render(); });
+    header.addEventListener('click', (e) => {
+        const card = e.target.closest('.available-dates');
+        if (!card) return;
+        cards.forEach(c => { c.classList.remove('selected-date'); c.querySelector('input').checked = false; });
+        card.classList.add('selected-date');
+        card.querySelector('input').checked = true;
+        renderSlots();
+    });
+
+    // Buscar (si ya añadiste el handler, esto puede quedarse igual)
+    const form = document.getElementById('health-workers-search-form');
+    const dateInput = document.getElementById('date');
+
+    function daysDiffUTC(dateStr) {
+        const [Y,M,D] = dateStr.split('-').map(Number);
+        const baseUTC = Date.UTC(base.getFullYear(), base.getMonth(), base.getDate());
+        const dUTC = Date.UTC(Y, M-1, D);
+        return Math.floor((dUTC - baseUTC) / 86400000);
+    }
+    function gotoDate(dateStr) {
+        if (!dateStr) return;
+        let d = daysDiffUTC(dateStr);
+        if (d < 0) d = 0;
+        offset = Math.floor(d / 3) * 3;
+        render();
+        const target = cards.find(c => c.querySelector('input[type="radio"]').value === dateStr);
+        if (target) {
+        cards.forEach(c => { c.classList.remove('selected-date'); c.querySelector('input').checked = false; });
+        target.classList.add('selected-date');
+        target.querySelector('input').checked = true;
+        renderSlots();
+        }
+    }
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const dateStr = dateInput.value;
+        if (dateStr) gotoDate(dateStr);
+        else renderSlots();
+    });
+
+    // Pintado inicial
+    render();
+
+    // === Sincronizar select appointment_type con tabs ===
+    const appointmentType = document.getElementById('appointment_type');
+
+    appointmentType.addEventListener('change', () => {
+        const value = appointmentType.value; // virtual | presencial | domiciliaria | ''
+
+        // limpiar tabs
+        tabLabels.forEach(l => l.classList.remove('current'));
+
+        if (value === 'virtual') {
+            // marcar tab Virtual
+            const virtualTab = [...tabLabels].find(l => l.textContent.toLowerCase().includes('virtual'));
+            if (virtualTab) {
+            virtualTab.classList.add('current');
+            }
+            precioEl.textContent = 'S/. 100.00';
+            direccionDiv.style.setProperty('display', 'none', 'important');
+
+        } else if (value === 'presencial') {
+            // marcar tab Presencial
+            const presTab = [...tabLabels].find(l => l.textContent.toLowerCase().includes('presencial'));
+            if (presTab) {
+            presTab.classList.add('current');
+            }
+            precioEl.textContent = 'S/. 150.00';
+            direccionDiv.style.setProperty('display', 'flex', 'important');
+
+        } else {
+            // para domiciliaria u otros (opcional)
+            precioEl.textContent = 'S/. 150.00';
+            direccionDiv.style.setProperty('display', 'flex', 'important');
+        }
+    });
+
+    const text = "Alopecia Corp.";
+    const span = document.getElementById("typed");
+    let i = 0;
+    let deleting = false;
+
+    function typeLoop() {
+        if (!deleting) {
+        // Escribiendo
+        if (i < text.length) {
+            span.textContent += text.charAt(i);
+            i++;
+            setTimeout(typeLoop, 100); // velocidad de escritura
+        } else {
+            // Espera 8 segundos antes de borrar
+            setTimeout(() => {
+            deleting = true;
+            typeLoop();
+            }, 8000);
+        }
+        } else {
+        // Borrando
+        if (i > 0) {
+            span.textContent = text.substring(0, i - 1);
+            i--;
+            setTimeout(typeLoop, 80); // velocidad de borrado
+        } else {
+            deleting = false;
+            setTimeout(typeLoop, 500); // pequeña pausa antes de volver a escribir
+        }
+        }
+    }
+
+    typeLoop();
 });
 
