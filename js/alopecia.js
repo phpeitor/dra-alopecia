@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     inputDate.value = today;
     inputDate.min = today;
 
-     const fechaNacInput = document.getElementById("fecha_nac");
+    const fechaNacInput = document.getElementById("fecha_nac");
 
     if (fechaNacInput) {
         const today = new Date();
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         fechaNacInput.setAttribute("max", maxDate);
     }
 
-    // ====== NUEVO: caché para usar programacion.json luego ======
+    let renderSlotsToken = 0;
     let programacionData = null;
 
     function resetSelect() {
@@ -174,13 +174,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         renderSlots();
     }
 
+    async function fetchBookedTimes(dateStr, prof) {
+        const q = new URLSearchParams({ date: dateStr, profesional: prof });
+        const res = await fetch(`php/reserva.php?${q.toString()}`, { cache: 'no-store' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = await res.json();
+        return Array.isArray(json.booked) ? json.booked.map(s => s.trim()) : [];
+    }
+
     // ====== RENDER SLOTS (por el end y con data-v-6cad2bde) ======
     async function renderSlots() {
-        if (!slotsWrapper) return; // guard por si el DOM cambia
+        if (!slotsWrapper) return; 
 
+        const myToken = ++renderSlotsToken;
         // limpiar
         slotsWrapper.innerHTML = '';
         slotsMsgBox.style.display = 'none';
+        slotsLoading.style.display = 'block';
 
         const prof = getSelectedProfesional();
         const dateStr = getSelectedDateStr();
@@ -190,42 +200,54 @@ document.addEventListener('DOMContentLoaded', async () => {
                 slotsMsgBox.style.display = 'block';
                 if (slotsMsgSpan) slotsMsgSpan.textContent = 'Selecciona un profesional para ver horarios.';
             }
+            slotsLoading.style.display = 'none';
             return;
         }
 
-        slotsLoading.style.display = 'block';
         try {
-            
+            // 1) disponibilidad teórica desde programacion.json (usando caché si ya la tienes)
             const data = programacionData || (await (await fetch('./js/programacion.json', { cache: 'no-store' })).json());
             if (!programacionData) programacionData = data;
 
             const events = (data.events || []).filter(e =>
-                e && e.profesional === prof &&
-                typeof e.start === 'string' && typeof e.end === 'string' &&
-                e.start.slice(0,10) === dateStr
+            e && e.profesional === prof &&
+            typeof e.start === 'string' && typeof e.end === 'string' &&
+            e.start.slice(0,10) === dateStr
             );
 
             const STEP_MIN = 45, MILLI = 60000;
             const slotsSet = new Set();
-
             for (const ev of events) {
                 const start = new Date(ev.start);
                 const end   = new Date(ev.end);
-                // construir por el END (incluye end)
                 for (let tEnd = new Date(end); tEnd > start; tEnd = new Date(tEnd.getTime() - STEP_MIN * MILLI)) {
-                slotsSet.add(HHMM(tEnd));
+                    const hhmm = `${String(tEnd.getHours()).padStart(2,'0')}:${String(tEnd.getMinutes()).padStart(2,'0')}`;
+                    slotsSet.add(hhmm);
                 }
             }
 
-            const slots = [...slotsSet].sort();
-            if (!slots.length) {
+            // 2) horarios reservados reales
+            const q = new URLSearchParams({ date: dateStr, profesional: prof });
+            const r = await fetch(`php/reserva.php?${q.toString()}`, { cache: 'no-store' });
+            const j = r.ok ? await r.json() : { booked: [] };
+            const bookedSet = new Set((j.booked || []).map(s => s.trim()));
+
+            // 3) resta y ordena
+            const slotsDisponibles = [...slotsSet].filter(h => !bookedSet.has(h)).sort();
+
+            // si esta corrida ya quedó vieja, no pintes
+            if (myToken !== renderSlotsToken) return;
+
+            // pintar (reemplazando contenido por si otro render pintó antes)
+            slotsWrapper.innerHTML = '';
+            if (!slotsDisponibles.length) {
                 slotsMsgBox.style.display = 'block';
                 if (slotsMsgSpan) slotsMsgSpan.textContent = 'No hay horarios disponibles para este día.';
                 return;
             }
 
             const frag = document.createDocumentFragment();
-            slots.forEach(hhmm => {
+            slotsDisponibles.forEach(hhmm => {
                 const label = document.createElement('label');
                 label.className = 'available-slots';
                 label.setAttribute('data-v-6cad2bde', '');
@@ -246,32 +268,30 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
             slotsWrapper.appendChild(frag);
 
+            // listeners de click
             slotsWrapper.querySelectorAll('.available-slots').forEach(slot => {
                 slot.addEventListener('click', () => {
                     const selectedDate = document.querySelector('.available-dates.selected-date');
-                    const selectedDateInput = document.querySelector('.available-dates.selected-date input[name="availability-date"]');
+                    const selectedDateInput = selectedDate?.querySelector('input[name="availability-date"]');
                     const dateValue = selectedDateInput ? selectedDateInput.value : '';
-                    const dayLabel = selectedDate?.querySelector('h3')?.innerText || ''; 
-                    const timeInput = slot.querySelector('input[name="availability-slot"]');
-                    const timeValue = timeInput ? timeInput.value : '';
+                    const dayLabel = selectedDate?.querySelector('h3')?.innerText || '';
+                    const timeValue = slot.querySelector('input[name="availability-slot"]')?.value || '';
 
                     const fecCitaSpan = document.getElementById('fec_cita');
                     if (fecCitaSpan) {
-                        fecCitaSpan.innerHTML = `
-                            <img src="./img/icon-calendar.svg" width="30px" height="26px" style="padding:0 5px;">
-                            ${dayLabel} ${dateValue} ${timeValue}
-                        `;
+                    fecCitaSpan.innerHTML = `
+                        <img src="./img/icon-calendar.svg" width="30" height="26" style="padding:0 5px;">
+                        ${dayLabel} ${dateValue} ${timeValue}
+                    `;
                     }
 
                     const precioElement = document.getElementById('precio');
-                    const payment = precioElement ? precioElement.innerText.trim() : '';
-
                     const pago_citaSpan = document.getElementById('pago_cita');
                     if (pago_citaSpan) {
-                        pago_citaSpan.innerHTML = `
-                            <img src="./img/payment.svg" width="30px" height="26px" style="padding:0 5px;">
-                            ${payment}
-                        `;
+                    pago_citaSpan.innerHTML = `
+                        <img src="./img/payment.svg" width="30" height="26" style="padding:0 5px;">
+                        ${(precioElement?.innerText || '').trim()}
+                    `;
                     }
 
                     modal.showModal();
@@ -279,12 +299,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
 
         } catch (e) {
+            // si quedó viejo, ignora el error visual
+            if (myToken !== renderSlotsToken) return;
             console.error(e);
             slotsMsgBox.style.display = 'block';
             if (slotsMsgSpan) slotsMsgSpan.textContent = 'No se pudo cargar la disponibilidad.';
         } finally {
+            // solo la última corrida debe ocultar el loading
+            if (myToken === renderSlotsToken) {
             slotsLoading.style.display = 'none';
+            }
         }
+
     }
 
     // Eventos de navegación y selección de día
