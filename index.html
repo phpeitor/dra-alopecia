@@ -51,12 +51,12 @@
                             <h6 class="mb-3 ms-1" style="color: #405f8d;" >Buscar por profesional o especialidad</h6>
                             <div class="d-flex flex-column flex-md-row gap-2 gap-md-0">
                                 <div class="mb-md-2 col-md-5 pe-md-2">
-                                    <select id="profesional" class="w-100 ps-2 " name="profesional">
+                                    <select id="profesional" class="w-100 ps-2 " name="profesional" required>
                                         <option value="">Profesional</option>
                                     </select>
                                 </div>
                                 <div class="mb-md-2 col-md-4 pe-md-2 speacialty-select">
-                                    <select id="specialty" class="w-100 ps-2 " name="specialty">
+                                    <select id="specialty" class="w-100 ps-2 " name="specialty" required>
                                         <option value="">Especialidad</option>
                                         <option value="alopecia" >
                                             ALOPECIA
@@ -65,7 +65,7 @@
                                 </div>
 
                                 <div class="mb-md-2 col-md-3 pe-md-2">
-                                    <select id="appointment_type" class="w-100 ps-2 " name="appointment_type">
+                                    <select id="appointment_type" class="w-100 ps-2 " name="appointment_type" required>
                                         <option value="">Tipo de cita</option>
                                         <option value="virtual" >
                                             Virtual
@@ -82,7 +82,7 @@
                         </div>
                         <div class="col-md-4 mt-3 mt-md-0">
                             <h6 class="mb-3 ms-1"  style="color: #405f8d;" >Filtrar por fecha</h6>
-                            <input type="date" name="date" class="form-control form-input ps-2" id="date" placeholder="Fecha" />
+                            <input type="date" name="date" class="form-control form-input ps-2" id="date" placeholder="Fecha" required />
                         </div>
                     </div>
                     <div class="d-flex flex-row-reverse col-md-12 mt-3 mt-md-0">
@@ -295,6 +295,66 @@
             <span class="footer__copyright">2025 © Copyright Alopecia Corp. Todos los derechos reservados.</span>
         </div>
     </footer>
+
+    <dialog id="date-event">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+            <div class="modal-body">
+                <div class="popup text-left">
+                    <h6 class="mb-3 ms-1" style="color: #405f8d;">Completa tus datos y empieza tu cita</h6>
+                    <span data-v-fddef610="" id="fec_cita" style="color: #405f8d;"><img data-v-fddef610="" src="./img/icon-calendar.svg" width="30px" height="26px" style="padding: 0px 5px;"></span>
+                    <form action="/" id="submit-schedule">
+                        <div class="content create-workform row">
+                            <div class="col-md-6 mt-2">
+                                <div class="form-group">
+                                    <input class="form-control" placeholder="Nombre Completo" type="text" name="nombre" id="nombre" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6 mt-2">
+                                <div class="form-group">
+                                    <input class="form-control" placeholder="Email" type="email" name="correo" id="correo" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6 mt-2">
+                                <div class="form-group">
+                                    <input class="form-control" placeholder="D.N.I" type="text" name="dni" id="dni" required maxlength="10"/>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mt-2">
+                                <div class="form-group">
+                                    <input class="form-control" placeholder="Teléfono" type="number" name="telefono" id="telefono" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6 mt-2">
+                                <div class="form-group">
+                                    <input class="form-control basicFlatpickr date-input" placeholder="Fecha Nacimiento" type="text" name="fecha_nac" id="fecha_nac" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6 mt-2">
+                                <div class="form-group">
+                                    <input class="form-control" placeholder="Dirección" type="text" name="direccion" id="direccion" required />
+                                </div>
+                            </div>
+                            <div class="col-md-12 mt-2">
+                                <div class="form-group">
+                                    <label class="form-label" for="schedule-start-date">Cuéntenos algo que nos ayude a prepararnos para la reunión</label>
+                                    <textarea class="form-control" name="comentario" id="comentario" placeholder="Escribe mensaje aqui" rows="2" cols="4" required></textarea>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12 mt-2">
+                                <div class="d-flex flex-wrap align-items-ceter justify-content-center">
+                                    <button class="btn btn-outline-primary" data-dismiss="modal">Cancel</button>
+                                    <button class="btn btn-primary ms-2" type="submit">Enviar</button>
+                                </div>
+                            </div>  
+                        </div>
+                    </form>
+                </div>
+            </div>
+            </div>
+        </div>
+    </dialog>
 
     <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
     <script type="text/javascript" src="./js/manifest.js"></script>

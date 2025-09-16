@@ -235,6 +235,27 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
             slotsWrapper.appendChild(frag);
 
+            slotsWrapper.querySelectorAll('.available-slots').forEach(slot => {
+                slot.addEventListener('click', () => {
+                    const selectedDate = document.querySelector('.available-dates.selected-date');
+                    const selectedDateInput = document.querySelector('.available-dates.selected-date input[name="availability-date"]');
+                    const dateValue = selectedDateInput ? selectedDateInput.value : '';
+                    const dayLabel = selectedDate?.querySelector('h3')?.innerText || ''; 
+                    const timeInput = slot.querySelector('input[name="availability-slot"]');
+                    const timeValue = timeInput ? timeInput.value : '';
+
+                    const fecCitaSpan = document.getElementById('fec_cita');
+                    if (fecCitaSpan) {
+                        fecCitaSpan.innerHTML = `
+                            <img src="./img/icon-calendar.svg" width="30px" height="26px" style="padding:0 5px;">
+                            ${dayLabel} ${dateValue} ${timeValue}
+                        `;
+                    }
+
+                    modal.showModal();
+                });
+            });
+
         } catch (e) {
             console.error(e);
             slotsMsgBox.style.display = 'block';
@@ -254,6 +275,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         card.classList.add('selected-date');
         card.querySelector('input').checked = true;
         renderSlots();
+        
     });
 
     // Buscar (si ya añadiste el handler, esto puede quedarse igual)
@@ -357,5 +379,64 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     typeLoop();
+
+    const modal = document.getElementById("date-event");
+
+    document.querySelector("#date-event .btn-outline-primary").addEventListener("click", () => {
+        modal.close();
+    });
+
+    const dniInput = document.getElementById("dni");
+    const nombreInput = document.getElementById("nombre");
+    let controller = null; // para cancelar fetchs previos
+
+    dniInput.addEventListener("keyup", async (e) => {
+        const dni = e.target.value.trim();
+
+        if (dni.length < 8) {
+        if (controller) {
+            try { controller.abort(); } catch (_) {}
+            controller = null;
+        }
+        nombreInput.value = "";
+        return;
+        }
+
+        // Solo consultar cuando tenga exactamente 8 caracteres
+        if (dni.length === 8) {
+        // cancelar cualquier petición previa
+        if (controller) {
+            try { controller.abort(); } catch (_) {}
+        }
+        controller = new AbortController();
+        const signal = controller.signal;
+
+        const url = `https://hablemos-de-endocrino-centro.medlink.la/api/clinic-histories/public/status?health_worker_id=698&document_type_id=1&document_number=${encodeURIComponent(dni)}`;
+
+        try {
+            const resp = await fetch(url, { signal });
+            controller = null; // ya no hay petición pendiente
+
+            if (!resp.ok) throw new Error(`Error ${resp.status}`);
+
+            const data = await resp.json();
+            const fp = data?.found_patient;
+
+            if (fp && (fp.name || fp.last_name)) {
+            // concatenar y limpiar espacios repetidos
+            const fullName = [fp.name, fp.last_name].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim();
+            nombreInput.value = fullName;
+            } else {
+            nombreInput.value = "";
+            }
+        } catch (err) {
+            // Si fue abortada, no hacemos nada
+            if (err.name === 'AbortError') return;
+            console.error('Error al consultar DNI:', err);
+            nombreInput.value = "";
+        }
+        }
+    });
+
 });
 
