@@ -5,6 +5,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     inputDate.value = today;
     inputDate.min = today;
 
+     const fechaNacInput = document.getElementById("fecha_nac");
+
+    if (fechaNacInput) {
+        const today = new Date();
+        today.setFullYear(today.getFullYear() - 18); 
+        const maxDate = today.toISOString().split("T")[0]; 
+
+        fechaNacInput.setAttribute("max", maxDate);
+    }
+
     // ====== NUEVO: caché para usar programacion.json luego ======
     let programacionData = null;
 
@@ -185,6 +195,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         slotsLoading.style.display = 'block';
         try {
+            
             const data = programacionData || (await (await fetch('./js/programacion.json', { cache: 'no-store' })).json());
             if (!programacionData) programacionData = data;
 
@@ -249,6 +260,17 @@ document.addEventListener('DOMContentLoaded', async () => {
                         fecCitaSpan.innerHTML = `
                             <img src="./img/icon-calendar.svg" width="30px" height="26px" style="padding:0 5px;">
                             ${dayLabel} ${dateValue} ${timeValue}
+                        `;
+                    }
+
+                    const precioElement = document.getElementById('precio');
+                    const payment = precioElement ? precioElement.innerText.trim() : '';
+
+                    const pago_citaSpan = document.getElementById('pago_cita');
+                    if (pago_citaSpan) {
+                        pago_citaSpan.innerHTML = `
+                            <img src="./img/payment.svg" width="30px" height="26px" style="padding:0 5px;">
+                            ${payment}
                         `;
                     }
 
@@ -437,6 +459,48 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         }
     });
+
+
+    const form_cita= document.getElementById('submit-schedule');
+    form_cita.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        console.log("Enviando formulario...");
+
+        const formData = new FormData(form_cita);
+
+        // Agregamos fecha y precio desde los spans
+        formData.append("fec_cita", document.getElementById("fec_cita").innerText.trim());
+        formData.append("precio", document.getElementById("pago_cita").innerText.trim());
+        formData.append("doctor", document.getElementById("doc-name").innerText.trim());
+
+        fetch("php/guardar.php", {
+            method: "POST",
+            body: formData
+        })
+        .then(res => res.text()) // 👈 primero texto
+        .then(text => {
+            console.log("Respuesta cruda del servidor:", text);
+            try {
+                const data = JSON.parse(text); // intentar parsear
+                alert(data.message);
+
+                if (data.success) {
+                    form_cita.reset();
+                    document.getElementById("date-event").close();
+
+                    const dateStr = document.getElementById("date").value;
+                    if (dateStr) gotoDate(dateStr);
+                    else renderSlots();
+                }
+            } catch (err) {
+                console.error("No es JSON válido:", err);
+            }
+        })
+        .catch(err => console.error("Error de red:", err));
+
+    });
+
 
 });
 

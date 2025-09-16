@@ -108,7 +108,7 @@
                                 </div> 
                                 
                                 <div data-v-fddef610="" class="col row-md ps-0 position-relative">
-                                    <h6 data-v-fddef610="" class="doc-name" style="color: rgb(64, 95, 141); font-weight: 600;"></h6> 
+                                    <h6 data-v-fddef610="" id="doc-name" class="doc-name" style="color: rgb(64, 95, 141); font-weight: 600;"></h6> 
                                     <!--<p data-v-fddef610="" class="mb-0" style="font-weight: 400; font-size: 12px; color: rgb(51, 50, 50);">
                                         CMP <span data-v-fddef610="">: 32915</span>
                                     </p>--> 
@@ -199,12 +199,10 @@
                                                                     <span data-v-6cad2bde="" class="sr-only"></span>
                                                                 </div>
                                                             </div> 
+
                                                             <div data-v-6cad2bde="" class="available-slots-wrapper">
-                                                                <!--<label data-v-6cad2bde="" class="available-slots">
-                                                                    <span data-v-6cad2bde="">08:00</span> 
-                                                                    <input data-v-6cad2bde="" type="radio" name="availability-slot" value="08:00">
-                                                                </label>-->
                                                             </div>
+
                                                             <div data-v-6cad2bde="" class="available-slots-message" style="display: none;">
                                                                 <span data-v-6cad2bde="" class="span-link">
                                                                     
@@ -299,59 +297,61 @@
     <dialog id="date-event">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-            <div class="modal-body">
-                <div class="popup text-left">
-                    <h6 class="mb-3 ms-1" style="color: #405f8d;">Completa tus datos y empieza tu cita</h6>
-                    <span data-v-fddef610="" id="fec_cita" style="color: #405f8d;"><img data-v-fddef610="" src="./img/icon-calendar.svg" width="30px" height="26px" style="padding: 0px 5px;"></span>
-                    <form action="/" id="submit-schedule">
-                        <div class="content create-workform row">
-                            <div class="col-md-6 mt-2">
-                                <div class="form-group">
-                                    <input class="form-control" placeholder="Nombre Completo" type="text" name="nombre" id="nombre" required />
-                                </div>
-                            </div>
-                            <div class="col-md-6 mt-2">
-                                <div class="form-group">
-                                    <input class="form-control" placeholder="Email" type="email" name="correo" id="correo" required />
-                                </div>
-                            </div>
-                            <div class="col-md-6 mt-2">
-                                <div class="form-group">
-                                    <input class="form-control" placeholder="D.N.I" type="text" name="dni" id="dni" required maxlength="10"/>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mt-2">
-                                <div class="form-group">
-                                    <input class="form-control" placeholder="Teléfono" type="number" name="telefono" id="telefono" required />
-                                </div>
-                            </div>
-                            <div class="col-md-6 mt-2">
-                                <div class="form-group">
-                                    <input class="form-control basicFlatpickr date-input" placeholder="Fecha Nacimiento" type="text" name="fecha_nac" id="fecha_nac" required />
-                                </div>
-                            </div>
-                            <div class="col-md-6 mt-2">
-                                <div class="form-group">
-                                    <input class="form-control" placeholder="Dirección" type="text" name="direccion" id="direccion" required />
-                                </div>
-                            </div>
-                            <div class="col-md-12 mt-2">
-                                <div class="form-group">
-                                    <label class="form-label" for="schedule-start-date">Cuéntenos algo que nos ayude a prepararnos para la reunión</label>
-                                    <textarea class="form-control" name="comentario" id="comentario" placeholder="Escribe mensaje aqui" rows="2" cols="4" required></textarea>
-                                </div>
-                            </div>
+                <div class="modal-body">
+                    <div class="popup text-left">
+                        <h6 class="mb-3 ms-1" style="color: #405f8d;">Completa tus datos y empieza tu cita</h6>
+                        <span data-v-fddef610="" id="fec_cita" style="color: #405f8d;"><img data-v-fddef610="" src="./img/icon-calendar.svg" width="30px" height="26px" style="padding: 0px 5px;"></span>
+                        <span data-v-fddef610="" id="pago_cita" style="color: #405f8d;"><img data-v-fddef610="" src="./img/payment.svg" width="30px" height="26px" style="padding: 0px 5px;"></span>
 
-                            <div class="col-md-12 mt-2">
-                                <div class="d-flex flex-wrap align-items-ceter justify-content-center">
-                                    <button class="btn btn-outline-primary" data-dismiss="modal">Cancel</button>
-                                    <button class="btn btn-primary ms-2" type="submit">Enviar</button>
+                        <form action="/" id="submit-schedule">
+                            <div class="content create-workform row">
+                                <div class="col-md-6 mt-2">
+                                    <div class="form-group">
+                                        <input class="form-control" placeholder="Nombre Completo" type="text" name="nombre" id="nombre" required />
+                                    </div>
                                 </div>
-                            </div>  
-                        </div>
-                    </form>
+                                <div class="col-md-6 mt-2">
+                                    <div class="form-group">
+                                        <input class="form-control" placeholder="Email" type="email" name="correo" id="correo" required />
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mt-2">
+                                    <div class="form-group">
+                                        <input class="form-control" placeholder="D.N.I" type="text" name="dni" id="dni" required maxlength="10"/>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mt-2">
+                                    <div class="form-group">
+                                        <input class="form-control" placeholder="Teléfono" type="number" name="telefono" id="telefono" required />
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mt-2">
+                                    <div class="form-group">
+                                        <input class="form-control basicFlatpickr date-input" placeholder="Fecha Nacimiento" type="date" name="fecha_nac" id="fecha_nac" required />
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mt-2">
+                                    <div class="form-group">
+                                        <input class="form-control" placeholder="Dirección" type="text" name="direccion" id="direccion" required />
+                                    </div>
+                                </div>
+                                <div class="col-md-12 mt-2">
+                                    <div class="form-group">
+                                        <label class="form-label" for="schedule-start-date">Cuéntenos algo que nos ayude a prepararnos para la reunión</label>
+                                        <textarea class="form-control" name="comentario" id="comentario" placeholder="Escribe mensaje aqui" rows="2" cols="4" required></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12 mt-2">
+                                    <div class="d-flex flex-wrap align-items-ceter justify-content-center">
+                                        <button class="btn btn-outline-primary" data-dismiss="modal">Cancel</button>
+                                        <button class="btn btn-primary ms-2" type="submit">Enviar</button>
+                                    </div>
+                                </div>  
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            </div>
             </div>
         </div>
     </dialog>
