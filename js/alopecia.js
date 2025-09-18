@@ -5,7 +5,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const inputDate = document.getElementById('date');
     inputDate.value = today;
     inputDate.min = today;
-
+    const yearSpan = document.getElementById("now_year");
+    const currentYear = new Date().getFullYear();
+    yearSpan.textContent = currentYear;
     const fechaNacInput = document.getElementById("fecha_nac");
 
     if (fechaNacInput) {
