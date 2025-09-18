@@ -2,6 +2,7 @@
 header("Content-Type: application/json; charset=UTF-8");
 date_default_timezone_set("America/Lima");
 require_once "cita.php";
+require_once "Mailer.php";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $cita = new Cita();
@@ -27,15 +28,36 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         "fecha_cita"       => $fecha_cita_mysql, 
         "precio"           => str_replace(["S/.", "S/"], "", $_POST["precio"] ?? ""), 
         "fecha_registro"   => date("Y-m-d H:i:s"),
-        "profesional"      => $_POST["doctor"] ?? ""
+        "profesional"      => $_POST["doctor"] ?? "",
+        "status"           => "PENDIENTE",  // 'PENDIENTE', 'CONFIRMADO', 'CANCELADO', 'COMPLETADO'
+        "sede"             => $_POST["sede"] ?? "",
+        "tipo"             => $_POST["tipo"] ?? "Presencial"
     ];
     //var_dump($data);
 
     $ok = $cita->guardar($data);
 
+    $email_sent = false;
+    $email_err  = null;
+    if ($ok && !empty($data['email'])) {
+        $cfg    = require __DIR__ . "/mail_config.php";
+        $mailer = new Mailer($cfg);
+        $payload = [
+          'fecha_cita_nice' => $fecha_cita_mysql,
+          'profesional'     => $data['profesional'],
+          'precio'          => $data['precio'],
+          'dni'             => $data['dni'],
+          'telefono'        => $data['telefono'],
+        ];
+        $email_sent = $mailer->sendConfirmation($data['email'], $data['nombre'] ?: $data['email'], $payload, $cfg['bcc_admin'] ?? null);
+        if (!$email_sent) { $email_err = 'No se pudo enviar el correo de confirmación.'; }
+    }
+
     echo json_encode([
-        "success" => $ok,
-        "message" => $ok ? "Cita guardada correctamente" : "Error al guardar la cita"
+        "success"      => $ok,
+        "message"      => $ok ? "Cita guardada correctamente" : "Error al guardar la cita",
+        "email_status" => $email_sent ? "sent" : "not_sent",
+        "email_error"  => $email_err
     ]);
     exit;
 }

@@ -50,32 +50,22 @@
                         <div class="col-md-8">
                             <h6 class="mb-3 ms-1" style="color: #405f8d;" >Buscar por profesional o especialidad</h6>
                             <div class="d-flex flex-column flex-md-row gap-2 gap-md-0">
+
+                                 <div class="mb-md-2 col-md-4 pe-md-2 speacialty-select">
+                                    <select id="sede" class="w-100 ps-2" name="sede" required>
+                                        <option value="">Sede</option>
+                                    </select>
+                                </div>
                                 <div class="mb-md-2 col-md-5 pe-md-2">
-                                    <select id="profesional" class="w-100 ps-2 " name="profesional" required>
+                                    <select id="profesional" class="w-100 ps-2" name="profesional" required>
                                         <option value="">Profesional</option>
                                     </select>
                                 </div>
-                                <div class="mb-md-2 col-md-4 pe-md-2 speacialty-select">
-                                    <select id="specialty" class="w-100 ps-2 " name="specialty" required>
-                                        <option value="">Especialidad</option>
-                                        <option value="alopecia" >
-                                            ALOPECIA
-                                        </option>
-                                    </select>
-                                </div>
-
                                 <div class="mb-md-2 col-md-3 pe-md-2">
-                                    <select id="appointment_type" class="w-100 ps-2 " name="appointment_type" required>
+                                    <select id="appointment_type" class="w-100 ps-2" name="appointment_type" required>
                                         <option value="">Tipo de cita</option>
-                                        <option value="virtual" >
-                                            Virtual
-                                        </option>
-                                        <option value="presencial" >
-                                            Presencial
-                                        </option>
-                                        <option value="domiciliaria" >
-                                            Domiciliaria
-                                        </option>
+                                        <option value="virtual">Virtual</option>
+                                        <option value="presencial">Presencial</option>
                                     </select>
                                 </div>
                             </div>
@@ -249,7 +239,7 @@
                         </div>
                         <div class="d-flex flex-column">
                             <span class="container-footer__wspcontact--text">Escríbenos</span>
-                            <span class="container-footer__wspcontact--number"><a href="https://api.whatsapp.com/send?phone=" target="_blank"> 999999999</a></span>
+                            <span class="container-footer__wspcontact--number"><a href="https://api.whatsapp.com/send?phone=932386625" target="_blank"> 932386625</a></span>
                         </div>
                     </div>
                 </div>
@@ -260,7 +250,7 @@
                 <div class="footer__items--networks d-flex flex-column">
                             <a
                                 id="btn-instagram"
-                                href="https://www.instagram.com/"
+                                href="https://www.instagram.com/alopeciacit"
                                 target="_blank"
                                 rel="noreferrer"
                             >
@@ -270,7 +260,7 @@
 
                             <a
                                 id="btn-facebook"
-                                href="https://www.facebook.com/"
+                                href="https://www.facebook.com/alopeciacit"
                                 target="_blank"
                                 rel="noreferrer"
                             >
@@ -283,8 +273,7 @@
             <div class="footer__items">
                 <div class="d-flex flex-column footer__items__resources footer__items--item">
                     <span style="font-size: 1rem">Recursos</span>
-                    <a href="#" rel="nofollow" style="margin: 2px">Libro de Reclamaciones</a>
-                    <a target="_blank" href="#" style="margin: 2px" rel="noreferrer">Política de Privacidad</a>
+                    <a href="#" style="margin: 2px" rel="noreferrer">Política de Privacidad</a>
                     <a href="#" rel="nofollow" style="margin: 2px">Preguntas Frecuentes</a>
                 </div>
             </div>
@@ -300,11 +289,19 @@
                 <div class="modal-body">
                     <div class="popup text-left">
                         <h6 class="mb-3 ms-1" style="color: #405f8d;">Completa tus datos y empieza tu cita</h6>
-                        <span data-v-fddef610="" id="fec_cita" style="color: #405f8d;"><img data-v-fddef610="" src="./img/icon-calendar.svg" width="30px" height="26px" style="padding: 0px 5px;"></span>
-                        <span data-v-fddef610="" id="pago_cita" style="color: #405f8d;"><img data-v-fddef610="" src="./img/payment.svg" width="30px" height="26px" style="padding: 0px 5px;"></span>
+                        <span data-v-fddef610="" id="fec_cita" style="color: #405f8d;"></span>
+                        <span data-v-fddef610="" id="pago_cita" style="color: #405f8d;"></span>
+                        <span data-v-fddef610="" id="tipo_cita" style="color: #405f8d;"></span>
+                        <label data-v-fddef610="" id="dir_cita" style="color: #405f8d;"></label>
 
                         <form action="/" id="submit-schedule">
                             <div class="content create-workform row">
+
+                                <div class="col-md-6 mt-2">
+                                    <div class="form-group">
+                                        <input class="form-control" placeholder="DNI/CEX/Pasaporte" type="text" name="dni" id="dni" required maxlength="10"/>
+                                    </div>
+                                </div>
                                 <div class="col-md-6 mt-2">
                                     <div class="form-group">
                                         <input class="form-control" placeholder="Nombre Completo" type="text" name="nombre" id="nombre" required />
@@ -317,27 +314,22 @@
                                 </div>
                                 <div class="col-md-6 mt-2">
                                     <div class="form-group">
-                                        <input class="form-control" placeholder="D.N.I" type="text" name="dni" id="dni" required maxlength="10"/>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mt-2">
-                                    <div class="form-group">
                                         <input class="form-control" placeholder="Teléfono" type="number" name="telefono" id="telefono" required />
                                     </div>
                                 </div>
                                 <div class="col-md-6 mt-2">
-                                    <div class="form-group">
+                                    <div class="form-group"> <small data-v-fddef610 class="fw-semibold">Fecha Nacimiento</small>
                                         <input class="form-control basicFlatpickr date-input" placeholder="Fecha Nacimiento" type="date" name="fecha_nac" id="fecha_nac" required />
                                     </div>
                                 </div>
                                 <div class="col-md-6 mt-2">
-                                    <div class="form-group">
-                                        <input class="form-control" placeholder="Dirección" type="text" name="direccion" id="direccion" required />
+                                    <div class="form-group"> <small data-v-fddef610 class="fw-semibold">Dirección</small>
+                                        <input class="form-control" placeholder="" type="text" name="direccion" id="direccion" required />
                                     </div>
                                 </div>
                                 <div class="col-md-12 mt-2">
                                     <div class="form-group">
-                                        <label class="form-label" for="schedule-start-date">Cuéntenos algo que nos ayude a prepararnos para la reunión</label>
+                                        <small data-v-fddef610 class="fw-semibold">Cuéntenos algo que nos ayude a prepararnos para la reunión</small>
                                         <textarea class="form-control" name="comentario" id="comentario" placeholder="Escribe mensaje aqui" rows="2" cols="4" required></textarea>
                                     </div>
                                 </div>
@@ -359,7 +351,7 @@
     <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
     <script type="text/javascript" src="./js/manifest.js"></script>
     <script type="text/javascript" src="./js/vendor.js"></script>
-    <script type="text/javascript" src="./js/alopecia.js"></script>
+    <script type="text/javascript" src="./js/alopecia.js?v=1.5"></script>
     <script src="./js/public-profile-cards.js"></script>
 </body>
 </html>

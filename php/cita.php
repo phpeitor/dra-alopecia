@@ -10,8 +10,9 @@ class Cita {
     }
 
     public function guardar($data) {
-        $sql = "INSERT INTO citas (nombre, email, dni, telefono, fecha_nacimiento, direccion, mensaje, fecha_cita, precio, fecha_registro, profesional) 
-                VALUES ( :nombre, :email, :dni, :telefono, :fecha_nacimiento, :direccion, :mensaje, :fecha_cita, :precio, :fecha_registro, :profesional)";
+        $sql = "INSERT INTO citas 
+        (nombre, email, dni, telefono, fecha_nacimiento, direccion, mensaje, fecha_cita, precio, fecha_registro, profesional, status, sede, tipo) 
+            VALUES ( :nombre, :email, :dni, :telefono, :fecha_nacimiento, :direccion, :mensaje, :fecha_cita, :precio, :fecha_registro, :profesional, :status, :sede, :tipo )";
         
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(":nombre", $data["nombre"]);
@@ -25,6 +26,9 @@ class Cita {
         $stmt->bindParam(":precio", $data["precio"]);
         $stmt->bindParam(":fecha_registro", $data["fecha_registro"]);
         $stmt->bindParam(":profesional", $data["profesional"]); 
+        $stmt->bindParam(":status", $data["status"]);
+        $stmt->bindParam(":sede", $data["sede"]);
+        $stmt->bindParam(":tipo", $data["tipo"]);
         //$stmt->debugDumpParams();
         return $stmt->execute();
     }
@@ -34,9 +38,9 @@ class Cita {
         $fin = $fecha . " 23:59:59";
         
         $sql = "SELECT DATE_FORMAT(fecha_cita, '%H:%i') AS hhmm
-                  FROM citas
-                 WHERE profesional = :prof
-                   AND fecha_cita BETWEEN :ini AND :fin";
+                FROM citas
+                WHERE profesional = :prof
+                AND fecha_cita BETWEEN :ini AND :fin";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(":prof", $profesional);
         $stmt->bindParam(":ini", $ini);

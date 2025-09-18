@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const selectProfesional = document.getElementById('profesional');
+    const selectSede = document.getElementById('sede');
     const today = new Date().toISOString().split('T')[0];
     const inputDate = document.getElementById('date');
     inputDate.value = today;
@@ -18,12 +19,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     let renderSlotsToken = 0;
     let programacionData = null;
 
-    function resetSelect() {
+    function resetSelectProfesional() {
         selectProfesional.innerHTML = '';
         const opt = document.createElement('option');
         opt.value = '';
         opt.textContent = 'Profesional';
         selectProfesional.appendChild(opt);
+    }
+
+    function getSelectedSede() {
+        const opt = selectSede?.options[selectSede.selectedIndex];
+        if (!opt || !opt.value) return null;
+        return opt.value;
     }
 
     try {
@@ -32,25 +39,61 @@ document.addEventListener('DOMContentLoaded', async () => {
         const data = await resp.json();
         programacionData = data; // <-- guardamos para usar en slots
 
-        const set = new Set();
-        (data.events || []).forEach(e => {
-          if (e && typeof e.profesional === 'string' && e.profesional.trim() !== '') {
-              set.add(e.profesional.trim());
-          }
+        const sedes = [...new Set((data.events || [])
+            .map(e => e?.sede)
+            .filter(Boolean))].sort((a,b)=> a.localeCompare(b,'es',{sensitivity:'base'}));
+
+        selectSede.innerHTML = '<option value="">Sede</option>';
+        sedes.forEach(s => {
+            const o = document.createElement('option');
+            o.value = s; o.textContent = s;
+            selectSede.appendChild(o);
         });
 
-        resetSelect();
-        [...set].sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' }))
-          .forEach(nombre => {
-              const option = document.createElement('option');
-              option.value = nombre;
-              option.textContent = nombre;
-              selectProfesional.appendChild(option);
-          });
+        // 2.2) función para llenar PROFESIONALES según sede elegida
+        function fillProfesionalesPorSede(sedeSel) {
+            const pros = new Set();
+            (data.events || []).forEach(e => {
+            if (!e || !e.profesional || !e.sede) return;
+            if (!sedeSel || e.sede === sedeSel) pros.add(e.profesional.trim());
+            });
+            resetSelectProfesional();
+            [...pros].sort((a,b)=> a.localeCompare(b,'es',{sensitivity:'base'}))
+            .forEach(nombre => {
+                const option = document.createElement('option');
+                option.value = nombre;
+                option.textContent = nombre;
+                selectProfesional.appendChild(option);
+            });
+        }
+
+        // inicial: sin sede aún → lista completa
+        fillProfesionalesPorSede(null);
+
+        // al cambiar sede: filtra profesionales y recalcula slots
+        selectSede.addEventListener('change', () => {
+            const sedeSel = getSelectedSede();
+            fillProfesionalesPorSede(sedeSel);
+
+            // limpiar datos del card cuando cambia la sede
+            docName.textContent = '';
+            docSpeciality.textContent = '';
+            profileImg.src = "./img/woman.jpg";
+
+            // (opcional) actualizar dirección por sede
+            const direccionPorSede = {
+                "Lima": "Av. José Pardo 513 Of. 701 - Miraflores",
+                "Arequipa": "Av. Cayma 404 - Arequipa"
+            };
+            const pDir = direccionDiv.querySelector('p');
+            if (pDir) pDir.textContent = direccionPorSede[sedeSel] || "Dirección por definir";
+
+            renderSlots();
+        });
 
     } catch (err) {
         console.error(err);
-        resetSelect();
+        resetSelectProfesional();
         const errorOpt = document.createElement('option');
         errorOpt.disabled = true;
         errorOpt.textContent = 'No se pudo cargar la lista';
@@ -59,33 +102,66 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const docName = document.querySelector('.doc-name');
     const docSpeciality = document.querySelector('.doc-speciality');
-    const profileImg = document.querySelector('.profile-doctor');
 
-    const imagenesProfesionales = {
-        "Dra. Adela Vargas": "./img/02.jpg",
-        "Dra. María Belén Peña": "./img/01.jpg",
-        "Dra. María Cristina Latorre": "./img/03.jpg"
+    const perfiles = {
+        "Dra. Adela Vargas": {
+            photo: "./img/02.jpg",
+            ig: "https://www.instagram.com/dermadela/"
+        },
+        "Dra. María Belén Peña": {
+            photo: "./img/01.jpg",
+            ig: "https://www.instagram.com/dra.alopecia/"
+        },
+        "Dra. María Cristina Latorre": {
+            photo: "./img/03.jpg",
+            ig: "https://www.instagram.com/dra.mariacristinalatorre/"
+        },
+        "Dra. Mirella Paredes Lira": {
+            photo: "./img/04.jpg",
+            ig: "https://www.instagram.com/dramirellaplira/"
+        }
     };
+
+    const profileImg = document.querySelector('.profile-doctor');
+    const perfilLink = document.querySelector('.text-turquoise'); 
+
+    function pintarPerfil(nombre) {
+        const p = perfiles[nombre] || {};
+        profileImg.src = p.photo || "./img/woman.jpg";
+        if (perfilLink) {
+            if (p.ig) {
+                perfilLink.href = p.ig;
+                perfilLink.target = "_blank";
+                perfilLink.rel = "noopener noreferrer nofollow";
+                perfilLink.style.pointerEvents = "auto";
+            } else {
+                perfilLink.removeAttribute('href');
+                perfilLink.style.pointerEvents = "none";
+            }
+        }
+    }
     
     selectProfesional.addEventListener('change', () => {
-        const selectedText = selectProfesional.options[selectProfesional.selectedIndex].text;
+        const selectedName = (selectProfesional.value || '').trim();
 
-        if (selectedText && selectedText !== 'Profesional') {
-            docName.textContent = selectedText;
+        if (selectedName) {
+            // pinta nombre/especialidad
+            docName.textContent = selectedName;
             docSpeciality.textContent = 'Alopecia';
 
-            if (imagenesProfesionales[selectedText]) {
-                profileImg.src = imagenesProfesionales[selectedText];
-            } else {
-                profileImg.src = "./img/woman.jpg"; 
-            }
+            // foto + link a Instagram según 'perfiles'
+            pintarPerfil(selectedName);
         } else {
+            // placeholder "Profesional"
             docName.textContent = '';
             docSpeciality.textContent = '';
             profileImg.src = "./img/woman.jpg";
+            if (perfilLink) {
+            perfilLink.removeAttribute('href');
+            perfilLink.style.pointerEvents = "none";
+            }
         }
 
-        // NUEVO: cuando cambie el profesional, recalcula slots
         renderSlots();
     });
 
@@ -175,7 +251,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     async function fetchBookedTimes(dateStr, prof) {
-        const q = new URLSearchParams({ date: dateStr, profesional: prof });
+        const q = new URLSearchParams({ date: dateStr, profesional: prof, sede: sede || '' });
         const res = await fetch(`php/reserva.php?${q.toString()}`, { cache: 'no-store' });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = await res.json();
@@ -192,27 +268,26 @@ document.addEventListener('DOMContentLoaded', async () => {
         slotsMsgBox.style.display = 'none';
         slotsLoading.style.display = 'block';
 
+        const sede = getSelectedSede();
         const prof = getSelectedProfesional();
         const dateStr = getSelectedDateStr();
 
-        if (!prof || !dateStr) {
-            if (!prof) {
-                slotsMsgBox.style.display = 'block';
-                if (slotsMsgSpan) slotsMsgSpan.textContent = 'Selecciona un profesional para ver horarios.';
-            }
+        if (!sede || !prof || !dateStr) {
+            slotsMsgBox.style.display = 'block';
+            if (slotsMsgSpan) slotsMsgSpan.textContent = 'Selecciona una sede y un profesional para ver horarios.';
             slotsLoading.style.display = 'none';
             return;
         }
 
         try {
-            // 1) disponibilidad teórica desde programacion.json (usando caché si ya la tienes)
             const data = programacionData || (await (await fetch('./js/programacion.json', { cache: 'no-store' })).json());
             if (!programacionData) programacionData = data;
 
             const events = (data.events || []).filter(e =>
-            e && e.profesional === prof &&
-            typeof e.start === 'string' && typeof e.end === 'string' &&
-            e.start.slice(0,10) === dateStr
+                e && e.profesional === prof &&
+                e.sede === sede &&
+                typeof e.start === 'string' && typeof e.end === 'string' &&
+                e.start.slice(0,10) === dateStr
             );
 
             const STEP_MIN = 45, MILLI = 60000;
@@ -230,7 +305,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             const q = new URLSearchParams({ date: dateStr, profesional: prof });
             const r = await fetch(`php/reserva.php?${q.toString()}`, { cache: 'no-store' });
             const j = r.ok ? await r.json() : { booked: [] };
-            const bookedSet = new Set((j.booked || []).map(s => s.trim()));
+            const booked = await fetchBookedTimes(dateStr, prof, sede);
+            const bookedSet = new Set((booked || []).map(s => s.trim()));
 
             // 3) resta y ordena
             const slotsDisponibles = [...slotsSet].filter(h => !bookedSet.has(h)).sort();
@@ -279,21 +355,55 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                     const fecCitaSpan = document.getElementById('fec_cita');
                     if (fecCitaSpan) {
-                    fecCitaSpan.innerHTML = `
-                        <img src="./img/icon-calendar.svg" width="30" height="26" style="padding:0 5px;">
-                        ${dayLabel} ${dateValue} ${timeValue}
-                    `;
+                        fecCitaSpan.innerHTML = `
+                            <img src="./img/icon-calendar.svg" width="30" height="26" style="padding:0 5px;">
+                            ${dayLabel} ${dateValue} ${timeValue}
+                        `;
                     }
 
                     const precioElement = document.getElementById('precio');
                     const pago_citaSpan = document.getElementById('pago_cita');
                     if (pago_citaSpan) {
-                    pago_citaSpan.innerHTML = `
-                        <img src="./img/payment.svg" width="30" height="26" style="padding:0 5px;">
-                        ${(precioElement?.innerText || '').trim()}
-                    `;
+                        pago_citaSpan.innerHTML = `
+                            <img src="./img/payment.svg" width="30" height="26" style="padding:0 5px;">
+                            ${(precioElement?.innerText || '').trim()}
+                        `;
                     }
 
+                    const selectTipo = document.getElementById('appointment_type');
+                    const tipo_citaSpan = document.getElementById('tipo_cita');
+                    const dir_citaSpan = document.getElementById('dir_cita');
+                    const direccionDiv = document.getElementById('direccionDiv');
+                    const direccionTexto = direccionDiv?.querySelector('p')?.textContent || '';
+
+                    function capitalize(text) {
+                        return text ? text.charAt(0).toUpperCase() + text.slice(1).toLowerCase() : '';
+                    }
+
+                    function actualizarVista() {
+                        const value = selectTipo.value;
+
+                        if (tipo_citaSpan) {
+                            tipo_citaSpan.innerHTML = `
+                            <img src="./img/icon-arrow-bottom.svg" width="30" height="26" style="padding:0 5px;">
+                            ${capitalize(value)}
+                            `;
+                        }
+
+                        if (dir_citaSpan) {
+                            if (value === 'presencial') {
+                                dir_citaSpan.innerHTML = `
+                                    <img src="./img/icon-gps.svg" width="30" height="26" style="padding:0 5px;">
+                                    ${direccionTexto}
+                                `;
+                            } else {
+                                dir_citaSpan.innerHTML = ''; 
+                            }
+                        }
+                    }
+
+                    actualizarVista();
+                    selectTipo.addEventListener('change', actualizarVista);
                     modal.showModal();
                 });
             });
@@ -360,39 +470,54 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Pintado inicial
     render();
 
-    // === Sincronizar select appointment_type con tabs ===
     const appointmentType = document.getElementById('appointment_type');
 
-    appointmentType.addEventListener('change', () => {
-        const value = appointmentType.value; // virtual | presencial | domiciliaria | ''
+    function normalizeTypeFromText(txt) {
+        const t = (txt || '').toLowerCase();
+        if (t.includes('virtual')) return 'virtual';
+        return 'presencial';
+    }
 
-        // limpiar tabs
+    function applyAppointmentType(value, { emitChange = false } = {}) {
+        const val = (value || '').toLowerCase(); // siempre en minúsculas: 'virtual' | 'presencial'
+
+        // Tabs: limpiar y marcar
         tabLabels.forEach(l => l.classList.remove('current'));
+        const selectedTab = [...tabLabels].find(l =>
+            l.textContent.toLowerCase().includes(val)
+        );
+        if (selectedTab) selectedTab.classList.add('current');
 
-        if (value === 'virtual') {
-            // marcar tab Virtual
-            const virtualTab = [...tabLabels].find(l => l.textContent.toLowerCase().includes('virtual'));
-            if (virtualTab) {
-            virtualTab.classList.add('current');
-            }
+        // Precio + dirección
+        if (val === 'virtual') {
             precioEl.textContent = 'S/. 100.00';
             direccionDiv.style.setProperty('display', 'none', 'important');
-
-        } else if (value === 'presencial') {
-            // marcar tab Presencial
-            const presTab = [...tabLabels].find(l => l.textContent.toLowerCase().includes('presencial'));
-            if (presTab) {
-            presTab.classList.add('current');
-            }
-            precioEl.textContent = 'S/. 150.00';
-            direccionDiv.style.setProperty('display', 'flex', 'important');
-
         } else {
-            // para domiciliaria u otros (opcional)
             precioEl.textContent = 'S/. 150.00';
             direccionDiv.style.setProperty('display', 'flex', 'important');
         }
+
+        // Select: actualizar si difiere
+        if ((appointmentType.value || '').toLowerCase() !== val) {
+            appointmentType.value = val;
+            if (emitChange) {
+                appointmentType.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        }
+    }
+
+    appointmentType.addEventListener('change', () => {
+        applyAppointmentType(appointmentType.value);
     });
+
+    tabLabels.forEach(label => {
+        label.addEventListener('click', () => {
+            const value = normalizeTypeFromText(label.textContent);
+            applyAppointmentType(value);
+        });
+    });
+
+    applyAppointmentType(appointmentType.value || 'presencial');
 
     const text = "Alopecia Corp.";
     const span = document.getElementById("typed");
@@ -401,13 +526,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function typeLoop() {
         if (!deleting) {
-        // Escribiendo
         if (i < text.length) {
             span.textContent += text.charAt(i);
             i++;
             setTimeout(typeLoop, 100); // velocidad de escritura
         } else {
-            // Espera 8 segundos antes de borrar
             setTimeout(() => {
             deleting = true;
             typeLoop();
@@ -418,10 +541,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (i > 0) {
             span.textContent = text.substring(0, i - 1);
             i--;
-            setTimeout(typeLoop, 80); // velocidad de borrado
+            setTimeout(typeLoop, 80); 
         } else {
             deleting = false;
-            setTimeout(typeLoop, 500); // pequeña pausa antes de volver a escribir
+            setTimeout(typeLoop, 500); 
         }
         }
     }
@@ -429,7 +552,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     typeLoop();
 
     const modal = document.getElementById("date-event");
-
     document.querySelector("#date-event .btn-outline-primary").addEventListener("click", () => {
         modal.close();
     });
@@ -442,15 +564,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         const dni = e.target.value.trim();
 
         if (dni.length < 8) {
-        if (controller) {
-            try { controller.abort(); } catch (_) {}
-            controller = null;
-        }
-        nombreInput.value = "";
-        return;
+            if (controller) {
+                try { controller.abort(); } catch (_) {}
+                controller = null;
+            }
+            nombreInput.value = "";
+            return;
         }
 
-        // Solo consultar cuando tenga exactamente 8 caracteres
         if (dni.length === 8) {
         // cancelar cualquier petición previa
         if (controller) {
@@ -490,15 +611,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     const form_cita= document.getElementById('submit-schedule');
     form_cita.addEventListener('submit', (e) => {
         e.preventDefault();
-
-        console.log("Enviando formulario...");
-
         const formData = new FormData(form_cita);
-
-        // Agregamos fecha y precio desde los spans
+        formData.append("sede", getSelectedSede() || '');
         formData.append("fec_cita", document.getElementById("fec_cita").innerText.trim());
         formData.append("precio", document.getElementById("pago_cita").innerText.trim());
         formData.append("doctor", document.getElementById("doc-name").innerText.trim());
+        formData.append("tipo", document.getElementById("appointment_type").value || '');
 
         fetch("php/guardar.php", {
             method: "POST",
