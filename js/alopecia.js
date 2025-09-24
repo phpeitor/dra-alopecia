@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const resp = await fetch('./js/programacion.json', { cache: 'no-store' });
         if (!resp.ok) throw new Error('No se pudo cargar programacion.json');
         const data = await resp.json();
-        programacionData = data; // <-- guardamos para usar en slots
+        programacionData = data; 
 
         const sedes = [...new Set((data.events || [])
             .map(e => e?.sede)
@@ -52,7 +52,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             selectSede.appendChild(o);
         });
 
-        // 2.2) función para llenar PROFESIONALES según sede elegida
         function fillProfesionalesPorSede(sedeSel) {
             const pros = new Set();
             (data.events || []).forEach(e => {
@@ -69,20 +68,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         }
 
-        // inicial: sin sede aún → lista completa
         fillProfesionalesPorSede(null);
 
-        // al cambiar sede: filtra profesionales y recalcula slots
         selectSede.addEventListener('change', () => {
             const sedeSel = getSelectedSede();
             fillProfesionalesPorSede(sedeSel);
-
-            // limpiar datos del card cuando cambia la sede
             docName.textContent = '';
             docSpeciality.textContent = '';
             profileImg.src = "./img/woman.jpg";
 
-            // (opcional) actualizar dirección por sede
             const direccionPorSede = {
                 "Lima": "Av. José Pardo 513 Of. 701 - Miraflores",
                 "Arequipa": "Av. Cayma 404 - Arequipa"
@@ -147,14 +141,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         const selectedName = (selectProfesional.value || '').trim();
 
         if (selectedName) {
-            // pinta nombre/especialidad
             docName.textContent = selectedName;
             docSpeciality.textContent = 'Alopecia';
-
-            // foto + link a Instagram según 'perfiles'
             pintarPerfil(selectedName);
         } else {
-            // placeholder "Profesional"
             docName.textContent = '';
             docSpeciality.textContent = '';
             profileImg.src = "./img/woman.jpg";
@@ -188,12 +178,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
-    // ====== FECHAS (3 en 3) ======
     const header = document.querySelector('header[data-v-6cad2bde]');
     const left  = header.querySelector('.arrow-left');
     const right = header.querySelector('.arrow-right');
     const cards = [...header.querySelectorAll('.available-dates')];
-
     const base = new Date(); base.setHours(0,0,0,0);
     let offset = 0; 
     const fmtFecha = new Intl.DateTimeFormat('es-PE', { day:'numeric', month:'long' });
@@ -207,8 +195,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
-
-    // ====== SLOTS DOM REFS (MOVER ARRIBA ANTES DE USAR) ======
     const pickerRoot   = document.querySelector('.availability-picker');
     const slotsWrapper = pickerRoot.querySelector('.available-slots-wrapper');
     const slotsLoading = pickerRoot.querySelector('.available-slots-loading');
@@ -247,8 +233,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         cards[0].classList.add('selected-date');
         cards.forEach(c => c.querySelector('input').checked = false);
         cards[0].querySelector('input').checked = true;
-
-        // NUEVO: al cambiar página de fechas, recalcula slots
         renderSlots();
     }
 
@@ -260,12 +244,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         return Array.isArray(json.booked) ? json.booked.map(s => s.trim()) : [];
     }
 
-    // ====== RENDER SLOTS (por el end y con data-v-6cad2bde) ======
     async function renderSlots() {
         if (!slotsWrapper) return; 
 
         const myToken = ++renderSlotsToken;
-        // limpiar
         slotsWrapper.innerHTML = '';
         slotsMsgBox.style.display = 'none';
         slotsLoading.style.display = 'block';
@@ -303,20 +285,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             }
 
-            // 2) horarios reservados reales
             const q = new URLSearchParams({ date: dateStr, profesional: prof });
             const r = await fetch(`php/reserva.php?${q.toString()}`, { cache: 'no-store' });
             const j = r.ok ? await r.json() : { booked: [] };
             const booked = await fetchBookedTimes(dateStr, prof, sede);
             const bookedSet = new Set((booked || []).map(s => s.trim()));
-
-            // 3) resta y ordena
             const slotsDisponibles = [...slotsSet].filter(h => !bookedSet.has(h)).sort();
 
-            // si esta corrida ya quedó vieja, no pintes
             if (myToken !== renderSlotsToken) return;
 
-            // pintar (reemplazando contenido por si otro render pintó antes)
             slotsWrapper.innerHTML = '';
             if (!slotsDisponibles.length) {
                 slotsMsgBox.style.display = 'block';
@@ -346,7 +323,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
             slotsWrapper.appendChild(frag);
 
-            // listeners de click
             slotsWrapper.querySelectorAll('.available-slots').forEach(slot => {
                 slot.addEventListener('click', () => {
                     const selectedDate = document.querySelector('.available-dates.selected-date');
@@ -411,21 +387,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
 
         } catch (e) {
-            // si quedó viejo, ignora el error visual
             if (myToken !== renderSlotsToken) return;
             console.error(e);
             slotsMsgBox.style.display = 'block';
             if (slotsMsgSpan) slotsMsgSpan.textContent = 'No se pudo cargar la disponibilidad.';
         } finally {
-            // solo la última corrida debe ocultar el loading
             if (myToken === renderSlotsToken) {
-            slotsLoading.style.display = 'none';
+                slotsLoading.style.display = 'none';
             }
         }
-
     }
 
-    // Eventos de navegación y selección de día
     left.addEventListener('click', () => { offset = Math.max(0, offset - 3); render(); });
     right.addEventListener('click', () => { offset += 3; render(); });
     header.addEventListener('click', (e) => {
@@ -438,7 +410,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         
     });
 
-    // Buscar (si ya añadiste el handler, esto puede quedarse igual)
     const form = document.getElementById('health-workers-search-form');
     const dateInput = document.getElementById('date');
 
@@ -469,7 +440,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         else renderSlots();
     });
 
-    // Pintado inicial
     render();
 
     const appointmentType = document.getElementById('appointment_type');
@@ -481,16 +451,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function applyAppointmentType(value, { emitChange = false } = {}) {
-        const val = (value || '').toLowerCase(); // siempre en minúsculas: 'virtual' | 'presencial'
+        const val = (value || '').toLowerCase(); 
 
-        // Tabs: limpiar y marcar
         tabLabels.forEach(l => l.classList.remove('current'));
         const selectedTab = [...tabLabels].find(l =>
             l.textContent.toLowerCase().includes(val)
         );
         if (selectedTab) selectedTab.classList.add('current');
 
-        // Precio + dirección
         if (val === 'virtual') {
             precioEl.textContent = 'S/. 100.00';
             direccionDiv.style.setProperty('display', 'none', 'important');
@@ -499,7 +467,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             direccionDiv.style.setProperty('display', 'flex', 'important');
         }
 
-        // Select: actualizar si difiere
         if ((appointmentType.value || '').toLowerCase() !== val) {
             appointmentType.value = val;
             if (emitChange) {
@@ -531,7 +498,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (i < text.length) {
             span.textContent += text.charAt(i);
             i++;
-            setTimeout(typeLoop, 100); // velocidad de escritura
+            setTimeout(typeLoop, 100); 
         } else {
             setTimeout(() => {
             deleting = true;
@@ -539,15 +506,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             }, 8000);
         }
         } else {
-        // Borrando
-        if (i > 0) {
-            span.textContent = text.substring(0, i - 1);
-            i--;
-            setTimeout(typeLoop, 80); 
-        } else {
-            deleting = false;
-            setTimeout(typeLoop, 500); 
-        }
+            if (i > 0) {
+                span.textContent = text.substring(0, i - 1);
+                i--;
+                setTimeout(typeLoop, 80); 
+            } else {
+                deleting = false;
+                setTimeout(typeLoop, 500); 
+            }
         }
     }
 
@@ -560,7 +526,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const dniInput = document.getElementById("dni");
     const nombreInput = document.getElementById("nombre");
-    let controller = null; // para cancelar fetchs previos
+    let controller = null; 
 
     dniInput.addEventListener("keyup", async (e) => {
         const dni = e.target.value.trim();
@@ -575,44 +541,64 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         if (dni.length === 8) {
-        // cancelar cualquier petición previa
-        if (controller) {
-            try { controller.abort(); } catch (_) {}
-        }
-        controller = new AbortController();
-        const signal = controller.signal;
-
-        const url = `https://hablemos-de-endocrino-centro.medlink.la/api/clinic-histories/public/status?health_worker_id=698&document_type_id=1&document_number=${encodeURIComponent(dni)}`;
-
-        try {
-            const resp = await fetch(url, { signal });
-            controller = null; // ya no hay petición pendiente
-
-            if (!resp.ok) throw new Error(`Error ${resp.status}`);
-
-            const data = await resp.json();
-            const fp = data?.found_patient;
-
-            if (fp && (fp.name || fp.last_name)) {
-            // concatenar y limpiar espacios repetidos
-            const fullName = [fp.name, fp.last_name].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim();
-            nombreInput.value = fullName;
-            } else {
-            nombreInput.value = "";
+            if (controller) {
+                try { controller.abort(); } catch (_) {}
             }
-        } catch (err) {
-            // Si fue abortada, no hacemos nada
-            if (err.name === 'AbortError') return;
-            console.error('Error al consultar DNI:', err);
-            nombreInput.value = "";
-        }
+            controller = new AbortController();
+            const signal = controller.signal;
+
+            const url = `https://hablemos-de-endocrino-centro.medlink.la/api/clinic-histories/public/status?health_worker_id=698&document_type_id=1&document_number=${encodeURIComponent(dni)}`;
+
+            try {
+                const resp = await fetch(url, { signal });
+                controller = null; 
+
+                if (!resp.ok) throw new Error(`Error ${resp.status}`);
+
+                const data = await resp.json();
+                const fp = data?.found_patient;
+
+                if (fp && (fp.name || fp.last_name)) {
+                const fullName = [fp.name, fp.last_name].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim();
+                nombreInput.value = fullName;
+                } else {
+                nombreInput.value = "";
+                }
+            } catch (err) {
+                if (err.name === 'AbortError') return;
+                console.error('Error al consultar DNI:', err);
+                nombreInput.value = "";
+            }
         }
     });
 
-
     const form_cita= document.getElementById('submit-schedule');
+    const submitBtn  = form_cita.querySelector('button[type="submit"]');
+
+    let isSubmitting = false;
+
+    function lockSubmit(lock = true) {
+        isSubmitting = lock;
+        if (!submitBtn) return;
+        if (submitBtn && submitBtn.dataset && !submitBtn.dataset.originalText) {
+            submitBtn.dataset.originalText = submitBtn.textContent.trim();
+        }
+
+        submitBtn.disabled = lock;
+        submitBtn.setAttribute('aria-busy', lock ? 'true' : 'false');
+
+        if (lock) {
+            submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Enviando...`;
+        } else {
+            submitBtn.textContent = submitBtn.dataset.originalText || 'Enviar';
+        }
+    }
+
     form_cita.addEventListener('submit', (e) => {
         e.preventDefault();
+        if (isSubmitting) return;      
+        lockSubmit(true);
+
         const formData = new FormData(form_cita);
         formData.append("sede", getSelectedSede() || '');
         formData.append("fec_cita", document.getElementById("fec_cita").innerText.trim());
@@ -624,11 +610,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             method: "POST",
             body: formData
         })
-        .then(res => res.text()) // 👈 primero texto
+        .then(res => res.text()) 
         .then(text => {
             console.log("Respuesta cruda del servidor:", text);
             try {
-                const data = JSON.parse(text); // intentar parsear
+                const data = JSON.parse(text); 
                 alert(data.message);
 
                 if (data.success) {
@@ -643,10 +629,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 console.error("No es JSON válido:", err);
             }
         })
-        .catch(err => console.error("Error de red:", err));
-
+        .catch(err => console.error("Error de red:", err))
+        .finally(() => {
+            lockSubmit(false);    
+        });
     });
-
-
 });
-
