@@ -49,7 +49,7 @@ class Mailer {
       $this->m->isHTML(true);
       $this->m->Subject = "Confirmación de cita — {$fechaNice}";
       $this->m->Body = "
-            <div style='font-family:Arial,sans-serif;font-size:14px;color:#222'>
+          <div style='font-family:Arial,sans-serif;font-size:14px;color:#222'>
               <h2 style='color:#405F8D;margin:0 0 10px'>Cita registrada</h2>
               <p>Hola <strong>".htmlspecialchars($toName)."</strong>,</p>
               <p>Tu cita quedó registrada con los siguientes datos:</p>
@@ -62,7 +62,7 @@ class Mailer {
               </ul>
               <p>Si necesitas reprogramar o cancelar, responde este correo.</p>
               <p style='margin-top:20px'>Gracias,<br><strong>Alopecia Corp.</strong></p>
-            </div>";
+          </div>";
       $this->m->AltBody = "Cita registrada\n"
             ."Profesional: $prof\n"
             ."Fecha y hora: $fechaNice\n"

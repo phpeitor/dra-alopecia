@@ -11,9 +11,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $fecha_cita_mysql = null;
 
     if ($fecha_cita_str) {
-        // sacar solo fecha y hora con regex
         if (preg_match('/(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2})/', $fecha_cita_str, $m)) {
-            $fecha_cita_mysql = $m[1] . " " . $m[2] . ":00"; // yyyy-mm-dd hh:mm:ss
+            $fecha_cita_mysql = $m[1] . " " . $m[2] . ":00";
         }
     }
 
