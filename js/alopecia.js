@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const currentYear = new Date().getFullYear();
     yearSpan.textContent = currentYear;
     const fechaNacInput = document.getElementById("fecha_nac");
+    const isToday = (dateStr) => dateStr === iso(base);
 
     if (fechaNacInput) {
         const today = new Date();
@@ -290,7 +291,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             const j = r.ok ? await r.json() : { booked: [] };
             const booked = await fetchBookedTimes(dateStr, prof, sede);
             const bookedSet = new Set((booked || []).map(s => s.trim()));
-            const slotsDisponibles = [...slotsSet].filter(h => !bookedSet.has(h)).sort();
+            
+            let slotsDisponibles = [...slotsSet]
+            .filter(h => !bookedSet.has(h))
+            .sort();
+
+            if (isToday(dateStr)) {
+            const nowHHMM = HHMM(new Date()); 
+            slotsDisponibles = slotsDisponibles.filter(h => h >= nowHHMM);
+            }
 
             if (myToken !== renderSlotsToken) return;
 
