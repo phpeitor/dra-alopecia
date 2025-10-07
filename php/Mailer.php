@@ -32,6 +32,77 @@ class Mailer {
     $this->m->CharSet = 'UTF-8';
   }
 
+  private function buildIcsFromCita(array $cita): ?string {
+    $tz = new DateTimeZone('America/Lima');
+    $nice = trim($cita['fecha_cita_nice'] ?? '');
+    if (!$nice) return null;
+    $start = DateTime::createFromFormat('Y-m-d H:i:s', $nice, $tz);
+    if (!$start) {
+      $start = DateTime::createFromFormat('Y-m-d H:i', $nice, $tz);
+    }
+    if (!$start) return null; 
+
+    $durMin = (int)($cita['duracion_min'] ?? 45);
+    $end    = (clone $start)->modify("+{$durMin} minutes");
+
+    $prof = $cita['profesional'] ?? 'Consulta médica';
+    $sede = trim($cita['sede'] ?? '');
+    $tipo = strtolower(trim($cita['tipo'] ?? 'presencial'));
+
+    $addressMap = [
+      'Lima'     => 'Av. José Pardo 513 Of. 701 - Miraflores',
+      'Arequipa' => 'Av. Cayma 404 - Arequipa',
+    ];
+
+    $summary  = "Consulta con {$prof}";
+    $location = ($tipo === 'presencial')
+      ? trim($sede . (isset($addressMap[$sede]) ? ' — '.$addressMap[$sede] : ''))
+      : ($sede ?: 'Online');
+
+    $desc = "Tipo: ".($tipo === 'presencial' ? 'Presencial' : 'Virtual');
+    if ($sede) $desc .= "\nSede: $sede";
+
+    $uid = bin2hex(random_bytes(8)).'@alopecia.local';
+    $fmt = function(DateTime $d, bool $utc=false) {
+      if ($utc) $d = (clone $d)->setTimezone(new DateTimeZone('UTC'));
+      return $d->format('Ymd\THis').($utc ? 'Z' : '');
+    };
+
+    $ics = "BEGIN:VCALENDAR\r\n"
+        . "PRODID:-//Alopecia Corp//Citas//ES\r\n"
+        . "VERSION:2.0\r\n"
+        . "CALSCALE:GREGORIAN\r\n"
+        . "METHOD:REQUEST\r\n"
+        . "BEGIN:VTIMEZONE\r\n"
+        . "TZID:America/Lima\r\n"
+        . "X-LIC-LOCATION:America/Lima\r\n"
+        . "BEGIN:STANDARD\r\n"
+        . "TZOFFSETFROM:-0500\r\n"
+        . "TZOFFSETTO:-0500\r\n"
+        . "TZNAME:-05\r\n"
+        . "DTSTART:19700101T000000\r\n"
+        . "END:STANDARD\r\n"
+        . "END:VTIMEZONE\r\n"
+        . "BEGIN:VEVENT\r\n"
+        . "UID:{$uid}\r\n"
+        . "DTSTAMP:".$fmt(new DateTime('now', new DateTimeZone('UTC')), true)."\r\n"
+        . "DTSTART;TZID=America/Lima:".$fmt($start)."\r\n"
+        . "DTEND;TZID=America/Lima:".$fmt($end)."\r\n"
+        . "SUMMARY:".addcslashes($summary, ",;")."\r\n"
+        . "LOCATION:".addcslashes($location, ",;")."\r\n"
+        . "DESCRIPTION:".preg_replace("/\r?\n/", "\\n", addcslashes($desc, ",;"))."\r\n"
+        . "STATUS:CONFIRMED\r\n"
+        . "BEGIN:VALARM\r\n"
+        . "TRIGGER:-PT24H\r\n"
+        . "ACTION:DISPLAY\r\n"
+        . "DESCRIPTION:Recordatorio de cita\r\n"
+        . "END:VALARM\r\n"
+        . "END:VEVENT\r\n"
+        . "END:VCALENDAR\r\n";
+
+    return $ics;
+  }
+
   public function sendConfirmation(string $toEmail, string $toName, array $cita, ?string $bcc = null): bool {
     try {
       $this->m->clearAddresses();
@@ -88,7 +159,18 @@ class Mailer {
 
       $this->m->AltBody = $alt;
 
+      $ics = $this->buildIcsFromCita($cita);
+      if ($ics) {
+        $this->m->addStringAttachment(
+          $ics,
+          'cita.ics',
+          'base64',
+          'text/calendar; method=REQUEST; charset=UTF-8'
+        );
+      }
+
       return $this->m->send();
+
     } catch (Exception $e) {
       error_log('Mailer error: '.$e->getMessage());
       return false;
