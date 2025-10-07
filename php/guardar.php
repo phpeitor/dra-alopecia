@@ -44,6 +44,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
           'precio'          => $data['precio'],
           'dni'             => $data['dni'],
           'telefono'        => $data['telefono'],
+          'sede'            => $data['sede'],
+          'tipo'            => $data['tipo'],
         ];
         $email_sent = $mailer->sendConfirmation($data['email'], $data['nombre'] ?: $data['email'], $payload, $cfg['bcc_admin'] ?? null);
         if (!$email_sent) { $email_err = 'No se pudo enviar el correo de confirmación.'; }

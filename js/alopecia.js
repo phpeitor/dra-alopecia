@@ -150,11 +150,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             docSpeciality.textContent = '';
             profileImg.src = "./img/woman.jpg";
             if (perfilLink) {
-            perfilLink.removeAttribute('href');
-            perfilLink.style.pointerEvents = "none";
+                perfilLink.removeAttribute('href');
+                perfilLink.style.pointerEvents = "none";
             }
         }
-
         renderSlots();
     });
 
@@ -583,7 +582,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const form_cita= document.getElementById('submit-schedule');
     const submitBtn  = form_cita.querySelector('button[type="submit"]');
-
     let isSubmitting = false;
 
     function lockSubmit(lock = true) {
@@ -635,7 +633,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     else renderSlots();
                 }
             } catch (err) {
-                console.error("No es JSON válido:", err);
+                console.error("JSON error:", err);
             }
         })
         .catch(err => console.error("Error de red:", err))

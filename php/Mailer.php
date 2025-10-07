@@ -36,7 +36,6 @@ class Mailer {
     try {
       $this->m->clearAddresses();
       $this->m->clearAttachments();
-
       $this->m->addAddress($toEmail, $toName);
       if ($bcc) $this->m->addBCC($bcc);
 
@@ -45,28 +44,49 @@ class Mailer {
       $precio    = $cita['precio'] ?? '';
       $dni       = $cita['dni'] ?? '';
       $tel       = $cita['telefono'] ?? '';
+      $sede      = trim($cita['sede'] ?? '');
+      $tipo      = strtolower(trim($cita['tipo'] ?? ''));
+      $addressMap = [
+        'Lima'     => 'Av. José Pardo 513 Of. 701 - Miraflores',
+        'Arequipa' => 'Av. Cayma 404 - Arequipa',
+      ];
+
+      $isPresencial = ($tipo === 'presencial');
+      $direccionSede = $addressMap[$sede] ?? null;
+      $showSede = $sede !== '';
+      $showDireccion = $isPresencial && $direccionSede; 
+      $h = fn($s) => htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
 
       $this->m->isHTML(true);
       $this->m->Subject = "Confirmación de cita — {$fechaNice}";
       $this->m->Body = "
-          <div style='font-family:Arial,sans-serif;font-size:14px;color:#222'>
-              <h2 style='color:#405F8D;margin:0 0 10px'>Cita registrada</h2>
-              <p>Hola <strong>".htmlspecialchars($toName)."</strong>,</p>
-              <p>Tu cita quedó registrada con los siguientes datos:</p>
-              <ul>
-                <li><strong>Profesional:</strong> ".htmlspecialchars($prof)."</li>
-                <li><strong>Fecha y hora:</strong> ".htmlspecialchars($fechaNice)."</li>
-                <li><strong>Precio:</strong> S/. ".htmlspecialchars($precio)."</li>
-                ".($dni   ? "<li><strong>DNI:</strong> ".htmlspecialchars($dni)."</li>" : "")."
-                ".($tel   ? "<li><strong>Teléfono:</strong> ".htmlspecialchars($tel)."</li>" : "")."
-              </ul>
-              <p>Si necesitas reprogramar o cancelar, responde este correo.</p>
-              <p style='margin-top:20px'>Gracias,<br><strong>Alopecia Corp.</strong></p>
-          </div>";
-      $this->m->AltBody = "Cita registrada\n"
-            ."Profesional: $prof\n"
-            ."Fecha y hora: $fechaNice\n"
-            ."Precio: S/. $precio\n";
+        <div style='font-family:Arial,sans-serif;font-size:14px;color:#222'>
+          <h2 style='color:#405F8D;margin:0 0 10px'>Cita registrada</h2>
+          <p>Hola <strong>".$h($toName)."</strong>,</p>
+          <p>Tu cita quedó registrada con los siguientes datos:</p>
+          <ul>
+            <li><strong>Profesional:</strong> ".$h($prof)."</li>
+            <li><strong>Fecha y hora:</strong> ".$h($fechaNice)."</li>
+            <li><strong>Tipo:</strong> ".($isPresencial ? 'Presencial' : 'Virtual')."</li>
+            <li><strong>Precio:</strong> S/. ".$h($precio)."</li>"
+            .($dni ? "<li><strong>DNI/CEX/Pasaporte:</strong> ".$h($dni)."</li>" : "")
+            .($showSede ? "<li><strong>Sede:</strong> ".$h($sede)."</li>" : "")
+            .($showDireccion ? "<li><strong>Dirección:</strong> ".$h($direccionSede)."</li>" : "")
+          ."</ul>
+          <p>Si necesitas reprogramar o cancelar, responde este correo.</p>
+          <p style='margin-top:20px'>Gracias,<br><strong>Alopecia Corp.</strong></p>
+        </div>";
+
+      $alt = "Cita registrada\n"
+          ."Profesional: $prof\n"
+          ."Fecha y hora: $fechaNice\n"
+          ."Tipo: ".($isPresencial ? 'Presencial' : 'Virtual')."\n"
+          ."Precio: S/. $precio\n";
+
+      if ($showSede)      { $alt .= "Sede: $sede\n"; }
+      if ($showDireccion) { $alt .= "Dirección: $direccionSede\n"; }
+
+      $this->m->AltBody = $alt;
 
       return $this->m->send();
     } catch (Exception $e) {

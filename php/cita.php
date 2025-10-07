@@ -11,8 +11,8 @@ class Cita {
 
     public function guardar($data) {
         $sql = "INSERT INTO citas 
-        (nombre, email, dni, telefono, fecha_nacimiento, direccion, mensaje, fecha_cita, precio, fecha_registro, profesional, status, sede, tipo) 
-            VALUES ( :nombre, :email, :dni, :telefono, :fecha_nacimiento, :direccion, :mensaje, :fecha_cita, :precio, :fecha_registro, :profesional, :status, :sede, :tipo )";
+                (nombre, email, dni, telefono, fecha_nacimiento, direccion, mensaje, fecha_cita, precio, fecha_registro, profesional, status, sede, tipo) 
+                VALUES ( :nombre, :email, :dni, :telefono, :fecha_nacimiento, :direccion, :mensaje, :fecha_cita, :precio, :fecha_registro, :profesional, :status, :sede, :tipo)";
         
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(":nombre", $data["nombre"]);
