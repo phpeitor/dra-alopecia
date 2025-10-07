@@ -6,7 +6,6 @@ require_once "Mailer.php";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $cita = new Cita();
-
     $fecha_cita_str = $_POST["fec_cita"] ?? "";
     $fecha_cita_mysql = null;
 
@@ -32,10 +31,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         "sede"             => $_POST["sede"] ?? "",
         "tipo"             => $_POST["tipo"] ?? "Presencial"
     ];
-    //var_dump($data);
 
     $ok = $cita->guardar($data);
-
     $email_sent = false;
     $email_err  = null;
     if ($ok && !empty($data['email'])) {

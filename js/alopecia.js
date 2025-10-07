@@ -297,8 +297,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             .sort();
 
             if (isToday(dateStr)) {
-            const nowHHMM = HHMM(new Date()); 
-            slotsDisponibles = slotsDisponibles.filter(h => h >= nowHHMM);
+                const nowHHMM = HHMM(new Date()); 
+                slotsDisponibles = slotsDisponibles.filter(h => h >= nowHHMM);
             }
 
             if (myToken !== renderSlotsToken) return;
@@ -306,7 +306,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             slotsWrapper.innerHTML = '';
             if (!slotsDisponibles.length) {
                 slotsMsgBox.style.display = 'block';
-                if (slotsMsgSpan) slotsMsgSpan.textContent = 'No hay horarios disponibles para este día.';
+                if (slotsMsgSpan) slotsMsgSpan.textContent = 'No hay horarios disponibles para este día';
                 return;
             }
 
