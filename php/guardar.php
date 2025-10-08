@@ -27,7 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         "precio"           => str_replace(["S/.", "S/"], "", $_POST["precio"] ?? ""), 
         "fecha_registro"   => date("Y-m-d H:i:s"),
         "profesional"      => $_POST["doctor"] ?? "",
-        "status"           => "PENDIENTE",  // 'PENDIENTE', 'CONFIRMADO', 'CANCELADO', 'COMPLETADO'
+        "status"           => "PENDIENTE",  
         "sede"             => $_POST["sede"] ?? "",
         "tipo"             => $_POST["tipo"] ?? "Presencial"
     ];
