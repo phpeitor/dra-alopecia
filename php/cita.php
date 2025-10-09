@@ -9,6 +9,22 @@ class Cita {
         $this->conn = $conexion->conectar();
     }
 
+    public function confirmarSiPendiente(int $id): bool {
+        $sql = "UPDATE citas SET status = 'CONFIRMADO' WHERE id = :id AND status = 'PENDIENTE'";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->rowCount() > 0;
+    }
+
+    public function anularSiPendiente(int $id): bool {
+        $sql = "UPDATE citas SET status = 'ANULADO' WHERE id = :id AND status = 'PENDIENTE'";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->rowCount() > 0;
+    }
+
     public function guardar($data) {
         $sql = "INSERT INTO citas 
                 (nombre, email, dni, telefono, fecha_nacimiento, direccion, mensaje, fecha_cita, precio, fecha_registro, profesional, status, sede, tipo) 
