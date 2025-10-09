@@ -21,9 +21,9 @@
         td.className = 'actions-cell';
         td.innerHTML = `
             <a href="#" class="action-link action-confirm" title="Confirmar"
-            data-id="${id}" data-action="confirm" aria-disabled="${disabled ? 'true':'false'}">✓</a>
+            data-id="${id}" data-action="confirm" aria-disabled="${disabled ? 'true':'false'}">✔️</a>
             <a href="#" class="action-link action-cancel"  title="Anular"
-            data-id="${id}" data-action="cancel"  aria-disabled="${disabled ? 'true':'false'}">✕</a>
+            data-id="${id}" data-action="cancel"  aria-disabled="${disabled ? 'true':'false'}">❌</a>
         `;
         return td;
     }
@@ -75,22 +75,22 @@
     }
 
     const colWidths = [
-        60,   // ID
-        160,  // Nombre
-        220,  // Email
-        100,  // DNI/CEX
-        120,  // Teléfono
-        120,  // Nacimiento
-        200,  // Dirección
-        260,  // Mensaje
-        150,  // Fecha Cita
-        80,   // Precio
-        150,  // Fecha Registro
-        180,  // Profesional
-        120,  // Status
-        110,  // Sede
-        110,  // Tipo
-        72    // Opciones  ← fijo y pequeño
+        60,   
+        160,  
+        220,  
+        100,  
+        120, 
+        120,  
+        200,  
+        260,  
+        150,  
+        80,   
+        150,  
+        180,  
+        120,  
+        110,  
+        110, 
+        72    
     ];
 
     const hot = new Handsontable(container, {
@@ -118,10 +118,10 @@
             { data: 'tipo' },
             { data: null, renderer: actionsRenderer, readOnly: true }
         ],
-        colWidths,               // ← fija anchos
-        autoColumnSize: false,   // ← no recalcular tamaños al desplazarte
-        stretchH: 'none',        // ← que no “estire” columnas
-        preventOverflow: 'horizontal', // ← usa scroll horizontal
+        colWidths,               
+        autoColumnSize: false,   
+        stretchH: 'none',
+        preventOverflow: 'horizontal', 
         manualColumnResize: true,
         filters: true,
         dropdownMenu: true,

@@ -67,7 +67,7 @@ dialog {
 .status-pill { padding:2px 8px; border-radius:999px; font-size:12px; font-weight:600; display:inline-block; }
 .st-PENDIENTE { background:#fff4e5; color:#b26b00; border:1px solid #ffd699; }
 .st-CONFIRMADO { background:#e8fff0; color:#0b8a47; border:1px solid #bff0d1; }
-.st-CANCELADO { background:#ffecec; color:#c92a2a; border:1px solid #ffc9c9; }
+.st-ANULADO { background:#ffecec; color:#c92a2a; border:1px solid #ffc9c9; }
 .st-COMPLETADO { background:#eef4ff; color:#2451b2; border:1px solid #c9d6ff; }
 #grid { margin-top: 16px; }
 .hot-display-license-info { display: none !important; }
@@ -93,13 +93,10 @@ dialog {
 }
 .btn-group{ display:flex; gap:8px; }
 
-/* celdas compactas */
 .handsontable .htCore td { padding: 4px 6px; }
 
-/* píldora de status sin romper línea */
 .status-pill { display:inline-block; white-space:nowrap; }
 
-/* acciones inline, sin padding extra ni bordes */
 .handsontable .actions-cell{
   display:flex; flex-direction:row; align-items:center; justify-content:center;
   gap:6px; white-space:nowrap; padding:0 4px !important; overflow:hidden;
