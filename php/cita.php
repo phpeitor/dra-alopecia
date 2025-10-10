@@ -25,6 +25,14 @@ class Cita {
         return $stmt->rowCount() > 0;
     }
 
+    public function reprogramarSiPendiente(int $id): bool {
+        $sql = "UPDATE citas SET status = 'REPROGRAMAR' WHERE id = :id AND status = 'PENDIENTE'";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->rowCount() > 0;
+    }
+
     public function guardar($data) {
         $sql = "INSERT INTO citas 
                 (nombre, email, dni, telefono, fecha_nacimiento, direccion, mensaje, fecha_cita, precio, fecha_registro, profesional, status, sede, tipo) 
@@ -46,7 +54,17 @@ class Cita {
         $stmt->bindParam(":sede", $data["sede"]);
         $stmt->bindParam(":tipo", $data["tipo"]);
         //$stmt->debugDumpParams();
-        return $stmt->execute();
+        if (!$stmt->execute()) return false;
+        return (int)$this->conn->lastInsertId();
+    }
+
+    public function getStatusById(int $id): ?string {
+        $sql = "SELECT status FROM citas WHERE id = :id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        $val = $stmt->fetchColumn();
+        return $val !== false ? (string)$val : null;
     }
 
     public function getReservados($fecha, $profesional) {

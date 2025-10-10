@@ -22,5 +22,8 @@ return [
   'from_name'  => envv('MAIL_FROM_NAME', 'Alopecia Corp.'),
   'reply_to'   => ['email' => envv('MAIL_REPLY_TO'), 'name' => envv('MAIL_REPLY_NAME', 'Soporte')],
   'bcc_admin'  => envv('MAIL_BCC_ADMIN'),
+  'action_base_url' => 'http://127.0.0.1/alopecia/php/cita_action.php', 
+  'action_secret'   => envv('CITA_ACTION_SECRET', ''),
+  'action_ttl_min'  => 72 * 60, 
 ];
 ?>

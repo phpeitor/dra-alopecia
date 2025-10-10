@@ -32,13 +32,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         "tipo"             => $_POST["tipo"] ?? "Presencial"
     ];
 
-    $ok = $cita->guardar($data);
+    $idInsert = $cita->guardar($data);
+    $ok = (bool)$idInsert;
     $email_sent = false;
     $email_err  = null;
     if ($ok && !empty($data['email'])) {
         $cfg    = require __DIR__ . "/mail_config.php";
         $mailer = new Mailer($cfg);
         $payload = [
+          'id'              => $idInsert,
           'fecha_cita_nice' => $fecha_cita_mysql,
           'profesional'     => $data['profesional'],
           'precio'          => $data['precio'],
