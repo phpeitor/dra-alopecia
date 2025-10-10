@@ -1,4 +1,13 @@
 <?php
+declare(strict_types=1);
+session_start();
+if (empty($_SESSION['citas_ok'])) {
+  http_response_code(403);
+  header('Content-Type: application/json; charset=utf-8');
+  echo json_encode(['success'=>false,'message'=>'Forbidden']);
+  exit;
+}
+
 header("Content-Type: application/json; charset=UTF-8");
 date_default_timezone_set("America/Lima");
 

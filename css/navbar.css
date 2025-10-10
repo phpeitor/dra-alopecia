@@ -28,15 +28,6 @@ dialog {
   margin-bottom: 1.5rem;
 }
 
-.btn {
-  padding: 0.6rem 1.4rem;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  cursor: pointer;
-  border: none;
-  transition: background 0.3s, color 0.3s;
-}
-
 .btn-primary {
   background: #007bff;
   color: #fff;

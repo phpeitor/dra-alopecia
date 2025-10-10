@@ -1,4 +1,3 @@
-    
     const yearSpan = document.getElementById("now_year");
     const currentYear = new Date().getFullYear();
     yearSpan.textContent = currentYear;
@@ -47,14 +46,14 @@
         try {
             const ok = await callUpdate(id, action);
             if (!ok) {
-            alert('No se pudo actualizar. ¿La cita sigue en PENDIENTE?');
+                alert('No se pudo actualizar. ¿La cita sigue en PENDIENTE?');
             } else {
-            const visualRow = hot.toVisualRow(hot.toPhysicalRow(hot.getSelectedLast()?.[0] ?? 0));
-            const rowIndex = hot.getSourceData().findIndex(r => Number(r.id) === id);
-            if (rowIndex >= 0) {
-                hot.setDataAtRowProp(rowIndex, 'status', action === 'confirm' ? 'CONFIRMADO' : 'ANULADO');
-                hot.render(); 
-            }
+                const visualRow = hot.toVisualRow(hot.toPhysicalRow(hot.getSelectedLast()?.[0] ?? 0));
+                const rowIndex = hot.getSourceData().findIndex(r => Number(r.id) === id);
+                if (rowIndex >= 0) {
+                    hot.setDataAtRowProp(rowIndex, 'status', action === 'confirm' ? 'CONFIRMADO' : 'ANULADO');
+                    hot.render(); 
+                }
             }
         } catch (err) {
             console.error(err);
@@ -129,6 +128,12 @@
     });
 
     async function loadData() {
+        const f = parseISO(fromInput.value);
+        const t = parseISO(toInput.value);
+        if (f && t && t < f) {
+            toInput.value = fromInput.value;
+            syncDateBounds();
+        }
         const params = new URLSearchParams();
         const from = document.getElementById('from').value;
         const to = document.getElementById('to').value;
@@ -175,6 +180,31 @@
         URL.revokeObjectURL(url);
     });
 
+    const fromInput = document.getElementById('from');
+    const toInput   = document.getElementById('to');
+
+    function parseISO(d){ return d ? new Date(d + 'T00:00:00') : null; }
+
+    function syncDateBounds() {
+    if (fromInput.value) toInput.min   = fromInput.value;
+    else                 toInput.removeAttribute('min');
+
+    if (toInput.value)   fromInput.max = toInput.value;
+    else                 fromInput.removeAttribute('max');
+    }
+
+    function ensureValidRange() {
+        const f = parseISO(fromInput.value);
+        const t = parseISO(toInput.value);
+        if (f && t && t < f) {
+            toInput.value = fromInput.value;
+        }
+        syncDateBounds();
+    }
+
+    fromInput.addEventListener('change', ensureValidRange);
+    toInput.addEventListener('change', ensureValidRange);
+
     (function setDefaultDates(){
         const today = new Date();
         const fromDt = new Date(today); fromDt.setDate(today.getDate());
@@ -183,4 +213,6 @@
         document.getElementById('from').value = fmt(fromDt);
         document.getElementById('to').value   = fmt(toDt);
     })();
+
+    syncDateBounds();
     loadData();
