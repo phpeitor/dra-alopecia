@@ -14,7 +14,7 @@
   }
 
   $TOKEN = $_ENV['CITAS_TOKEN'] ?? getenv('CITAS_TOKEN') ?: null;
-  $TTL_MIN = (int)($_ENV['CITAS_TOKEN_TTL_MIN'] ?? getenv('CITAS_TOKEN_TTL_MIN') ?: 0); // 0 = sin caducidad automática
+  $TTL_MIN = (int)($_ENV['CITAS_TOKEN_TTL_MIN'] ?? getenv('CITAS_TOKEN_TTL_MIN') ?: 0); 
 
   if (!$TOKEN) {
     http_response_code(500);
@@ -55,8 +55,7 @@
       $error = 'Token incorrecto';
     }
 ?>
-
-  <!doctype html>
+  <!DOCTYPE html>
   <html lang="es"><head>
     <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Acceso | Alopecia Corp.</title>
