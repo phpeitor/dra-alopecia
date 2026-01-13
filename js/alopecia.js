@@ -622,7 +622,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.log("Respuesta cruda del servidor:", text);
             try {
                 const data = JSON.parse(text); 
-                alert(data.message);
+                alertify.success(data.message);
 
                 if (data.success) {
                     form_cita.reset();
@@ -633,10 +633,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                     else renderSlots();
                 }
             } catch (err) {
-                console.error("JSON error:", err);
+                alertify.error("JSON error:", err);
             }
         })
-        .catch(err => console.error("Error de red:", err))
+        .catch(err => alertify.error("Error de red:", err))
         .finally(() => {
             lockSubmit(false);    
         });

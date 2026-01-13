@@ -46,7 +46,7 @@
         try {
             const ok = await callUpdate(id, action);
             if (!ok) {
-                alert('No se pudo actualizar. ¿La cita sigue en PENDIENTE?');
+                alertify.error('No se pudo actualizar. ¿La cita sigue en PENDIENTE?');
             } else {
                 const visualRow = hot.toVisualRow(hot.toPhysicalRow(hot.getSelectedLast()?.[0] ?? 0));
                 const rowIndex = hot.getSourceData().findIndex(r => Number(r.id) === id);
@@ -57,7 +57,7 @@
             }
         } catch (err) {
             console.error(err);
-            alert('Error de red al actualizar.');
+            alertify.error('Error de red al actualizar.');
         } finally {
             a.textContent = oldText;
         }
@@ -153,7 +153,7 @@
         const res = await fetch(`php/cita_table.php?${params.toString()}`, { cache: 'no-store' });
         const json = await res.json();
         if (!json.success) {
-            alert(json.message || 'No se pudieron cargar las citas');
+            alertify.error(json.message || 'No se pudieron cargar las citas');
             return;
         }
         hot.loadData(json.data || []);

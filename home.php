@@ -60,11 +60,13 @@
     <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Acceso | Alopecia Corp.</title>
     <link rel="icon" type="image/svg+xml" href="./img/favicon-2.svg" />
-    <link rel="stylesheet" href="./css/app.css">
-    <link rel="stylesheet" type="text/css" href="./css/view-patients.css">
+    <link rel="stylesheet" href="./css/app.css"/>
+    <link rel="stylesheet" type="text/css" href="./css/view-patients.css"/>
     <link rel="stylesheet" href=./css/search_health_workers.css>
-    <link rel="stylesheet" type="text/css" href="./css/health_workers_cards.css">
-    <link rel="stylesheet" href="./css/navbar.css">
+    <link rel="stylesheet" type="text/css" href="./css/health_workers_cards.css"/>
+    <link rel="stylesheet" href="./css/navbar.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/css/alertify.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/css/themes/default.min.css"/>
     <style>
       :root { --brand:#496caf; --bg:#f7f9fc; --card:#fff; --muted:#8a94a6; }
       body{margin:0;background:var(--bg);font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;}
@@ -185,5 +187,6 @@
   <script src="./js/public-profile-cards.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/handsontable@14.3.0/dist/handsontable.full.min.js"></script>
   <script src="./js/citas.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/alertifyjs@1.14.0/build/alertify.min.js"></script>
 </body>
 </html>
